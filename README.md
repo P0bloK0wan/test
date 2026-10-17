@@ -123,3 +123,5 @@ Arquivos MP4 compatíveis e trailers usam o player próprio Streamlab. Vídeos i
 A avaliação dos três projetos sugeridos está em [REPOSITORY-REVIEW](docs/REPOSITORY-REVIEW.md). Nenhum código desses repositórios foi incorporado nesta entrega.
 
 O painel oferece quatro etapas (Vídeo, Informações, Capa e Revisão), prévia e modo rápido opcional. Salvar cria rascunho; publicar exige ação separada. Veja [ADMIN-WIZARD](docs/ADMIN-WIZARD.md).
+
+Revisão de interface e testes responsivos: [UX-REVIEW](docs/UX-REVIEW.md). A opção de abrir vídeo do aparelho foi retirada; o administrador continua podendo enviar vídeos ao catálogo.

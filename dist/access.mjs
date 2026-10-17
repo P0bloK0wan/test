@@ -14,7 +14,7 @@ export async function requireViewer({admin=false}={}){
  const guest=Object.freeze({guest:true});
  if(!cloud.ready||!cloud.client){if(admin){unavailable();return null;}return guest;}
  try{
-  const {data,error}=await cloud.client.auth.getUser();
+  let sessionTimer;const {data,error}=await Promise.race([cloud.client.auth.getUser(),new Promise((_,reject)=>sessionTimer=setTimeout(()=>reject(new Error('Session timeout')),8000))]).finally(()=>clearTimeout(sessionTimer));
   if(!data?.user){
    if(admin){if(error&&/fetch|network|timeout/i.test(error.message||'')){unavailable();return null;}location.replace(loginDestination(true));return null;}
    cloud.client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session?.user?.id)location.reload();});

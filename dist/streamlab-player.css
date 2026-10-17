@@ -1,1 +1,25 @@
 .streamlab-player{width:100%;background:#090b0e;color:#f4f4f2;position:relative;outline-offset:-3px}.streamlab-player video{display:block;width:100%;max-height:70vh;object-fit:contain}.sl-controls{padding:12px 16px;background:#15181e}.sl-controls[hidden]{display:none}.sl-seek-row,.sl-buttons{display:flex;align-items:center;gap:10px}.sl-seek-row{margin-bottom:8px}.sl-seek{flex:1;min-width:40px}.sl-time{font:12px ui-monospace,monospace;white-space:nowrap}.sl-buttons{flex-wrap:wrap}.sl-controls button,.sl-controls select{min-height:44px;min-width:44px;background:#252a33;border:1px solid #444b58;border-radius:8px;color:inherit;padding:8px;font:inherit;cursor:pointer}.sl-controls button:hover{background:#39333a}.sl-controls :focus-visible{outline:3px solid #ff4d45;outline-offset:2px}.sl-controls input[type=range]{accent-color:#ff4d45;height:44px;cursor:pointer}.sl-volume{width:84px}.sl-speed{display:flex;align-items:center;gap:8px;font-size:12px}.sl-status{margin:0;font-size:13px;color:#ffd5d2}.sl-status:not(:empty){margin-top:10px}.sl-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.streamlab-player:fullscreen{display:flex;flex-direction:column;justify-content:center}.streamlab-player:fullscreen video{flex:1;min-height:0;max-height:calc(100vh - 150px)}.streamlab-player:fullscreen .sl-controls{flex:none}@media(max-width:600px){.sl-controls{padding:10px}.sl-buttons{gap:6px}.sl-speed{gap:4px}.sl-volume{width:65px}.sl-time{font-size:11px}.streamlab-player video{max-height:55vh}}@media(prefers-reduced-motion:reduce){.streamlab-player *{scroll-behavior:auto;transition:none}}
+
+/* Keep the title, media, transport and credits in separate document-flow rows. */
+dialog.player-dialog[open]{display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;isolation:isolate}
+.player-dialog .player-topbar{position:relative;inset:auto;flex:0 0 auto;min-width:0;background:#0e0f14;padding:16px 24px;gap:14px}
+.player-dialog .player-topbar h1{min-width:0;overflow-wrap:anywhere;font-size:16px;line-height:1.45}
+.player-dialog .player-topbar span{font-size:12px;line-height:1.5}
+.player-dialog .player-topbar .dialog-close{width:44px;height:44px}
+.player-dialog .player-stage{height:auto;min-height:0;flex:1 0 auto;padding:0;align-items:center}
+.player-dialog .streamlab-player{max-width:1200px;margin-inline:auto;min-width:0;flex:0 1 auto}
+.player-dialog .streamlab-player video{height:auto;max-height:56dvh;min-height:0;aspect-ratio:16/9}
+.player-dialog .player-stage>video,.player-dialog .player-stage>iframe{height:56dvh;min-height:160px;max-height:680px;display:block}
+.player-dialog .player-bottom{position:relative;inset:auto;flex:0 0 auto;min-width:0;display:flex;flex-wrap:wrap;gap:10px 16px;padding:16px 24px;margin:0;pointer-events:auto;font-size:12px;line-height:1.6;background:#0e0f14;overflow-wrap:anywhere}
+.player-dialog>.small-note{flex:0 0 auto;padding:12px 24px;margin:0;background:#0e0f14}
+.player-dialog .video-error{position:relative;inset:auto;flex:0 0 auto;margin:0;padding:22px 24px;background:#17181c}
+.player-dialog .video-error strong{font-size:18px;line-height:1.4}
+.player-dialog .video-error p{margin:0;font-size:14px}
+.player-dialog .sl-controls{box-sizing:border-box}
+.player-dialog .sl-buttons{row-gap:8px}
+.player-dialog .sl-speed{flex-wrap:wrap}
+.player-dialog .streamlab-player:fullscreen{height:100%;max-width:none;overflow-y:auto;justify-content:flex-start}
+.player-dialog .streamlab-player:fullscreen video{flex:1 1 0;height:0;max-height:none;min-height:80px;aspect-ratio:auto}
+.player-dialog .streamlab-player:fullscreen .sl-controls{flex:0 0 auto;width:100%}
+@media(max-width:600px){.player-dialog .player-topbar{padding:10px 12px;gap:10px}.player-dialog .player-topbar h1{font-size:14px}.player-dialog .player-topbar span{font-size:11px}.player-dialog .player-bottom{padding:12px;font-size:11px}.player-dialog>.small-note{padding:12px}.player-dialog .sl-controls{padding:10px 8px}.player-dialog .sl-speed{font-size:11px;gap:4px}.player-dialog .sl-controls button,.player-dialog .sl-controls select{font-size:13px}.player-dialog .sl-volume{width:64px}}
+@media(max-height:480px) and (orientation:landscape){.player-dialog .player-topbar{padding:8px 16px}.player-dialog .streamlab-player video{max-height:40dvh}.player-dialog .player-stage>video,.player-dialog .player-stage>iframe{height:40dvh;min-height:120px}.player-dialog .player-bottom{padding:10px 16px}.player-dialog .sl-controls{padding:6px 12px}.player-dialog .sl-seek-row{margin-bottom:0}}

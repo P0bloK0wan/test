@@ -139,18 +139,7 @@ try {
     assert.equal(await page.locator('html').evaluate(el=>el.classList.contains('motion-enabled')),false);
     assert.equal(await page.locator('.hero h1').isVisible(),true);
   });
-  await check('A device file plays locally and its object URL is revoked on close', async()=>{
-    await go('home');
-    await page.evaluate(()=>{window.__revoked=[];const revoke=URL.revokeObjectURL.bind(URL);URL.revokeObjectURL=url=>{window.__revoked.push(url);revoke(url);};});
-    const chooser=page.waitForEvent('filechooser');
-    await page.locator('.footer [data-action="local-video"]').click();
-    await (await chooser).setFiles(fileURLToPath(new URL('../dist/assets/media/sintel-trailer.mp4',import.meta.url)));
-    await page.waitForFunction(()=>{const v=document.querySelector('video');return v?.src.startsWith('blob:')&&v.readyState>=1;});
-    const blob=await page.locator('video').evaluate(v=>v.src);
-    await page.locator('video').evaluate(v=>v.play());
-    await page.waitForFunction(()=>document.querySelector('video')?.currentTime>0.3);
-    await close();await page.waitForFunction(url=>window.__revoked.includes(url),blob);
-  });
+  await check('Device-file opening is removed from navigation and input', async()=>{await go('home');assert.equal(await page.locator('[data-action="local-video"],#local-video-file').count(),0);});
   await check('An owner-configured catalog video plays natively and saves progress', async()=>{
     await context.route('**/my-videos.mjs',r=>r.fulfill({contentType:'text/javascript',body:`export const myVideos=[{id:'meu-video-qa',title:'Meu vídeo QA',video:'assets/media/sintel-trailer.mp4',age:0,minutes:1,credit:'Autor QA'}];`}));
     await go('films'); await page.reload(); await page.getByRole('button',{name:'Detalhes de Meu vídeo QA',exact:true}).click();

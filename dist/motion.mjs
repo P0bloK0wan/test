@@ -41,7 +41,7 @@ export function initMotion(root = document) {
           observer?.unobserve(entry.target);
         }
       }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
-      root.querySelectorAll('.shelf, .feature-band').forEach(element => observer.observe(element));
+      root.querySelectorAll('.shelf, .feature-band, .personal-collection, .catalog-grid').forEach(element => observer.observe(element));
     } catch {
       observer?.disconnect();
       observer = undefined;

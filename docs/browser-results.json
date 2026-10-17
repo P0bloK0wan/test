@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "checkedAt": "2026-10-17T14:34:39.646Z",
+  "checkedAt": "2026-10-17T15:11:05.068Z",
   "checks": [
     {
       "label": "Home renders original Sintel hero and eleven catalog titles",
@@ -59,7 +59,7 @@
       "passed": true
     },
     {
-      "label": "A device file plays locally and its object URL is revoked on close",
+      "label": "Device-file opening is removed from navigation and input",
       "passed": true
     },
     {

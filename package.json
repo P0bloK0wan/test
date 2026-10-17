@@ -18,7 +18,8 @@
     "test:personal": "node tests/personal-browser.mjs",
     "test:player": "node tests/player-browser.mjs",
     "test:wizard": "node tests/admin-wizard-browser.mjs",
-    "test:guest": "node tests/guest-browser.mjs"
+    "test:guest": "node tests/guest-browser.mjs",
+    "test:layout": "node tests/polish-layout-browser.mjs && node tests/player-layout-browser.mjs && node tests/loading-browser.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

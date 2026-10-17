@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#141414"><meta name="description" content="Descubra uma seleção de cinema aberto. Explore filmes, crie sua lista e continue suas histórias favoritas.">
 <title>Streamlab — Histórias para descobrir</title>
 <link rel="icon" type="image/svg+xml" href="assets/streamlab-mark.svg">
@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="personal.css">
 <link rel="stylesheet" href="streamlab-player.css">
 <link rel="preload" as="image" href="assets/sintel-hero.png">
-<style>body[data-auth-pending]{visibility:hidden}</style><link rel="stylesheet" href="brand.css">
+<link rel="stylesheet" href="brand.css">
+<link rel="stylesheet" href="polish.css">
 </head>
 <body data-auth-pending>
 <a class="skip-link" href="#main">Pular para o conteúdo</a>
@@ -20,16 +21,17 @@
   <a href="#/home" data-view="home">Início</a><a href="#/films" data-view="films">Filmes</a><a href="#/animation" data-view="animation">Animações</a><a href="#/new" data-view="new">Novidades</a><a href="#/list" data-view="list">Minha lista</a><a href="#/me" data-view="me">Minha Streamlab</a>
  </nav>
  <div class="header-actions">
+  <a id="account-entry" class="account-entry" href="login.html" data-action="account-login">Entrar</a>
   <div class="search-control"><button class="icon-button" id="search-toggle" aria-label="Buscar filmes"></button><input id="global-search" type="search" placeholder="Títulos, gêneros, histórias" aria-label="Buscar títulos, gêneros e histórias" autocomplete="off" hidden></div>
   <button class="icon-button notice-button" id="notices-toggle" aria-label="Novidades do catálogo" aria-expanded="false"></button>
   <button class="profile-button" id="profile-toggle" aria-label="Abrir menu de perfis" aria-expanded="false"><span id="active-avatar" class="avatar avatar--small avatar--red" aria-hidden="true"></span><span class="profile-chevron" aria-hidden="true">▾</span></button>
  </div>
  <div id="header-panel" class="header-panel" hidden></div>
 </header>
-<main id="main" tabindex="-1"></main>
-<footer class="footer"><div class="footer-brand">Histórias que merecem ser descobertas.</div><div class="footer-links"><span id="admin-footer"></span><button data-action="local-video">Abrir vídeo do aparelho</button><button data-action="credits">Créditos do catálogo</button><button data-action="preferences">Preferências</button><button data-action="help">Ajuda</button></div><p>Uma seleção independente de cinema aberto. Perfis e listas pertencem à sua conta. A área Minha Streamlab mostra o estado da sincronização.</p><small>© 2026 · Experiência independente de demonstração.</small></footer>
+<main id="main" tabindex="-1"><section class="catalog-bootstrap" aria-label="Carregando catálogo"><p>Preparando suas próximas histórias…</p><div class="catalog-skeleton-grid" aria-hidden="true"><div class="catalog-skeleton"></div><div class="catalog-skeleton"></div><div class="catalog-skeleton"></div><div class="catalog-skeleton"></div></div></section></main>
+<div id="catalog-status" class="catalog-status" role="status" hidden></div>
+<footer class="footer"><div class="footer-brand">Histórias que merecem ser descobertas.</div><div class="footer-links"><span id="admin-footer"></span><button data-action="credits">Créditos do catálogo</button><button data-action="preferences">Preferências</button><button data-action="help">Ajuda</button></div><p>Uma seleção independente de cinema aberto. Perfis e listas pertencem à sua conta. A área Minha Streamlab mostra o estado da sincronização.</p><small>© 2026 · Experiência independente de demonstração.</small></footer>
 <nav class="mobile-nav" aria-label="Navegação móvel"><a href="#/home" data-mobile="home"></a><a href="#/search" data-mobile="search"></a><a href="#/list" data-mobile="list"></a><a href="#/me" data-mobile="me"></a></nav>
-<input id="local-video-file" type="file" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv" hidden>
 <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script type="module" src="app-entry.mjs"></script>
