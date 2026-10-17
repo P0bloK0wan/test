@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#141414"><meta name="robots" content="noindex"><title>Administração — Cinema</title>
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="admin.css"><link rel="stylesheet" href="metadata-panel.css">
-<style>body[data-auth-pending]{visibility:hidden}</style></head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#141414"><meta name="robots" content="noindex"><title>Administração — Streamlab</title>
+<link rel="icon" href="assets/streamlab-mark.svg" type="image/svg+xml"><link rel="stylesheet" href="admin.css"><link rel="stylesheet" href="metadata-panel.css">
+<style>body[data-auth-pending]{visibility:hidden}</style><link rel="stylesheet" href="brand.css">
+</head>
 <body data-auth-pending>
-<header><a class="brand" href="./">CINEMA <span>ESTÚDIO</span></a><a href="./">← Voltar ao catálogo</a></header>
+<header><a class="brand" href="./">Streamlab <span>ADMIN</span></a><a href="./">← Voltar ao catálogo</a></header>
 <main>
-<section class="intro"><p class="eyebrow">Seu catálogo, suas histórias</p><h1>Painel de administração</h1><p>Envie seus vídeos, prepare os detalhes e publique quando estiver tudo pronto.</p></section>
+<section class="intro"><p class="eyebrow">Seu catálogo, suas histórias</p><h1>Seu catálogo, sem complicação.</h1><p>Adicione um vídeo, confira os detalhes e publique.</p></section>
 <p id="message" class="message" role="status" aria-live="polite" hidden></p>
 <section id="setup" class="panel" hidden><h2>Configuração pendente</h2><p>O acesso seguro e o armazenamento online precisam ser conectados antes de usar o painel. Nenhuma senha ou vídeo será enviado enquanto essa configuração estiver pendente.</p><p>Consulte o guia <code>docs/PAINEL-ADMIN.md</code> no projeto.</p></section>
 <section id="auth" class="panel" hidden>
@@ -22,8 +23,9 @@
 <section id="denied" class="panel" hidden><h2>Conta sem permissão de administrador</h2><p>Seu login foi reconhecido, mas este e-mail ainda não está autorizado a gerenciar o catálogo. O responsável pelo projeto precisa autorizar a conta no servidor.</p><button data-signout>Sair desta conta</button></section>
 <div id="workspace" hidden>
 <div class="session-bar"><span>Sessão de administrador verificada</span><div class="actions"><button id="change-password" type="button">Alterar minha senha</button><button data-signout>Sair</button></div></div>
+<nav class="admin-shortcuts" aria-label="Atalhos do painel"><a href="#add-video">＋ Adicionar vídeo</a><a href="#manage-videos">Meu catálogo</a><a href="#metadata-panel">Buscar informações</a></nav>
 <section class="panel" id="metadata-panel" aria-label="Buscar informações de filmes"></section>
-<section class="panel"><div class="section-heading"><div><p class="eyebrow">Primeiro, um rascunho</p><h2>Adicionar vídeo</h2></div><span class="badge">Privado até publicar</span></div>
+<section class="panel" id="add-video"><div class="section-heading"><div><p class="eyebrow">Primeiro, um rascunho</p><h2>Adicionar vídeo</h2></div><span class="badge">Privado até publicar</span></div>
 <form id="video-form">
 <div class="grid two">
 <label>Título<input name="title" required maxlength="160" placeholder="O nome da sua história"></label>
@@ -46,7 +48,7 @@
 <div class="actions"><button class="primary" id="save-button" type="submit">Salvar rascunho</button><button id="cancel-upload" type="button" hidden>Cancelar envio</button></div>
 </form>
 </section>
-<section class="panel"><div class="section-heading"><div><p class="eyebrow">Controle de publicação</p><h2>Seus vídeos</h2></div><button id="refresh" type="button">Atualizar lista</button></div><p class="hint">Publicações aparecem no catálogo online. Retirar uma publicação do catálogo mantém seu rascunho. Excluir o registro não apaga o arquivo do Google Drive.</p><div id="video-list" aria-live="polite"><p>Carregando vídeos…</p></div></section>
+<section class="panel" id="manage-videos"><div class="section-heading"><div><p class="eyebrow">Controle de publicação</p><h2>Seus vídeos</h2></div><button id="refresh" type="button">Atualizar lista</button></div><p class="hint">Publicações aparecem no catálogo online. Retirar uma publicação do catálogo mantém seu rascunho. Excluir o registro não apaga o arquivo do Google Drive.</p><div id="video-list" aria-live="polite"><p>Carregando vídeos…</p></div></section>
 </div>
 </main>
 <footer>Administração protegida por autenticação e permissões no servidor.</footer>
