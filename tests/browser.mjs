@@ -18,6 +18,7 @@ try {
   browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium', headless:true, args:['--no-sandbox']});
   const context = await browser.newContext({viewport:{width:1440,height:1000}, reducedMotion:'reduce'});
   await context.route('**/*', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort());
+  await context.route('**/access.mjs',r=>r.fulfill({contentType:'text/javascript',body:"export const viewer={id:'qa-viewer',email:'viewer@example.invalid'};export const viewerIsAdmin=false;export async function requireViewer(){return viewer;}"}));
   page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
   const go = async hash => {await page.goto(`${base}/#/${hash}`); await page.waitForLoadState('networkidle');};
@@ -68,7 +69,7 @@ try {
     await go('films'); await page.getByRole('button',{name:'Detalhes de Spring',exact:true}).click(); await page.locator('#dialog [data-action="save"]').click(); await close();
     await go('list'); assert.deepEqual(await page.locator('.card-caption strong').allTextContents(),['Spring']);
     await switchProfile('Você'); assert.deepEqual(await page.locator('.card-caption strong').allTextContents(),['Sintel']);
-    await page.reload(); assert.deepEqual(await page.locator('.card-caption strong').allTextContents(),['Sintel']);
+    await page.reload(); await page.getByRole('button',{name:'Detalhes de Sintel',exact:true}).waitFor(); assert.deepEqual(await page.locator('.card-caption strong').allTextContents(),['Sintel']);
   });
   await check('Playback preferences persist through a reload', async()=>{
     await page.locator('.footer [data-action="preferences"]').click(); await page.locator('#pref-autoplay').uncheck(); await page.locator('#pref-muted').check();
@@ -183,7 +184,7 @@ try {
   await writeFile(`${docs}/browser-results.json`,JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify({passed:true,checks:checks.length}));
 } catch(error) {
-  console.error(error);console.error('Page errors:',errors);if(page)console.error('Progress diagnostic:',await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('netflix-web.library.v1')||'null');return s?.profiles.map(p=>({id:p.id,progress:p.progress}));}).catch(()=>null)); process.exitCode=1;
+  console.error(error);console.error('Page errors:',errors);if(page)console.error('Progress diagnostic:',await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('netflix-web.library.v1.qa-viewer')||'null');return s?.profiles.map(p=>({id:p.id,progress:p.progress}));}).catch(()=>null)); process.exitCode=1;
 } finally {
   if(page) await page.evaluate(()=>document.querySelector('video')?.pause()).catch(()=>{});
   if(browser) await browser.close();

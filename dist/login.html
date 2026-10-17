@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101013"><meta name="description" content="Seu lugar para descobrir histórias. Entre ou crie sua conta no Cinema, um site independente."><title>Entrar — Cinema</title><link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="login.css">
+</head>
+<body>
+<a class="skip" href="#access">Pular para entrar</a>
+<div class="backdrop" aria-hidden="true"></div>
+<header><a class="brand" href="./index.html" aria-label="Cinema — início">CINEMA<span>HISTÓRIAS QUE CONECTAM</span></a><span class="independent">Cinema independente</span></header>
+<main>
+<section class="story"><p class="eyebrow">Uma tela. Muitas descobertas.</p><h1>O próximo filme<br>pode ficar com você.</h1><p class="lead">Entre para descobrir histórias, organizar seus favoritos e continuar de onde parou.</p><div class="film-note"><span class="play-mark" aria-hidden="true">▶</span><div><strong>Sintel</strong><span>Uma jornada de coragem e amizade.</span></div></div><div class="posters" aria-hidden="true"><img src="assets/spring.webp" alt="" width="165" height="93"><img src="assets/big-buck-bunny.webp" alt="" width="165" height="93"><img src="assets/tears-of-steel.webp" alt="" width="165" height="93"></div><p class="art-credit">Arte de filmes abertos · Blender Foundation / Blender Studio</p></section>
+<section class="access" id="access" aria-labelledby="access-title" tabindex="-1">
+<div id="setup" hidden><p class="eyebrow">Estamos preparando sua sessão</p><h2>Acesso em configuração</h2><p>A conexão segura com o serviço de contas ainda não está disponível. Nenhum e-mail ou senha será enviado nesta página.</p></div>
+<div id="auth-content" hidden>
+<p class="eyebrow" id="access-eyebrow">Bom ter você por aqui</p><h2 id="access-title">Entrar</h2><p class="description" id="access-description">Sua próxima história começa aqui.</p>
+<p id="auth-message" class="message" role="status" aria-live="polite" hidden></p>
+<form id="login-form">
+<label id="name-label" hidden>Como podemos chamar você? <span>(opcional)</span><input id="name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Seu nome"></label>
+<label id="email-label">E-mail<input id="email" name="email" type="email" required autocomplete="username" maxlength="254" placeholder="voce@exemplo.com"></label>
+<label id="password-label">Senha<span class="password-control"><input id="password" name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="Sua senha"><button id="toggle-password" type="button" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></span></label>
+<p id="password-hint" class="hint" hidden>Use pelo menos 8 caracteres e uma senha exclusiva para este site.</p>
+<button class="primary" id="submit" type="submit">Entrar</button>
+</form>
+<button id="forgot" class="text-button" type="button">Esqueci minha senha</button>
+<div class="mode-switch" id="mode-switch"><span id="switch-description">Sua primeira vez aqui?</span><button id="switch-mode" class="text-button" type="button">Criar uma conta</button></div>
+<button id="back-login" class="text-button" type="button" hidden>Voltar para entrar</button>
+<p class="account-note">Conta deste site de cinema independente. Use seu próprio e-mail e uma senha exclusiva; este acesso não usa contas de outras plataformas.</p>
+</div>
+</section>
+</main>
+<footer><span>© 2026 Cinema · Uma experiência independente.</span><span>Catálogo e disponibilidade podem mudar.</span></footer>
+<script type="module" src="login.mjs"></script>
+</body>
+</html>

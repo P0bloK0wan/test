@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#141414"><meta name="robots" content="noindex"><title>Administração — Cinema</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="admin.css"><link rel="stylesheet" href="metadata-panel.css">
-</head>
-<body>
+<style>body[data-auth-pending]{visibility:hidden}</style></head>
+<body data-auth-pending>
 <header><a class="brand" href="./">CINEMA <span>ESTÚDIO</span></a><a href="./">← Voltar ao catálogo</a></header>
 <main>
 <section class="intro"><p class="eyebrow">Seu catálogo, suas histórias</p><h1>Painel de administração</h1><p>Envie seus vídeos, prepare os detalhes e publique quando estiver tudo pronto.</p></section>
@@ -50,6 +50,6 @@
 </div>
 </main>
 <footer>Administração protegida por autenticação e permissões no servidor.</footer>
-<script type="module" src="admin.mjs"></script>
+<script type="module" src="admin-entry.mjs"></script>
 </body>
 </html>

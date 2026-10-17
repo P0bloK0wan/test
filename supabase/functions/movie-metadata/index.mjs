@@ -3,7 +3,7 @@ const TMDB_ORIGIN = 'https://api.themoviedb.org';
 const TOKEN_PATTERN = /^[A-Za-z0-9._-]{1,512}$/;
 
 function allowedOrigin(origin) {
-  if (origin === SITE_ORIGIN) return true;
+  if ([SITE_ORIGIN, 'https://p0blok0wan.github.io'].includes(origin)) return true;
   try {
     const url = new URL(origin);
     return url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname) && url.origin === origin;

@@ -3,6 +3,7 @@ import {createLibrary} from './library.mjs';
 import {filterCatalog} from './catalog-query.mjs';
 import {initMotion} from './motion.mjs';
 import {cloud} from './cloud-client.mjs';
+import {viewer,viewerIsAdmin} from './access.mjs';
 
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -22,7 +23,7 @@ const paths = {
  external:'<path d="M14 3h7v7M21 3l-9 9M10 4H4v16h16v-6"/>', download:'<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',
 };
 const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.info}</svg>`;
-let storage; try {storage=window.localStorage;} catch {}
+let storage;try{const local=window.localStorage;const suffix='.'+viewer.id;storage={getItem:key=>local.getItem(key+suffix),setItem:(key,value)=>local.setItem(key+suffix,value)};}catch{}
 const library=createLibrary(storage);
 const dialog=$('dialog');
 let cleanupMotion=()=>{};
@@ -52,7 +53,7 @@ function updateHeader(){
 }
 function card(movie,{rank=0,progress=false}={}){
  const record=progress?library.progress(movie.id):null;const percent=record&&record.duration?Math.min(100,record.seconds/record.duration*100):0;
- return `<article class="movie-card${rank?' movie-card--rank':''}" data-movie="${movie.id}"><div class="card-visual">${rank?`<span class="rank-number" aria-hidden="true">${rank}</span>`:''}<button class="card-open" data-action="details" data-id="${movie.id}" data-focus="details-${movie.id}" aria-label="Detalhes de ${esc(movie.title)}" title="${esc(movie.title)}"><img src="${esc(movie.image)}" alt="" loading="lazy" width="640" height="360"></button><span class="card-mark" aria-hidden="true">N</span><span class="card-title-overlay" aria-hidden="true">${esc(movie.title)}</span><div class="card-actions"><button class="round-button round-button--white" data-action="${progress?'resume':'play'}" data-id="${movie.id}" data-focus="play-${movie.id}" aria-label="${progress?'Continuar':'Assistir a'} ${esc(movie.title)}">${icon('play')}</button><button class="round-button" data-action="save" data-id="${movie.id}" data-focus="save-${movie.id}" aria-label="${library.isSaved(movie.id)?'Remover da':'Adicionar à'} minha lista: ${esc(movie.title)}" aria-pressed="${library.isSaved(movie.id)}">${icon(library.isSaved(movie.id)?'check':'plus')}</button></div>${record?`<div class="progress-track" aria-label="${Math.round(percent)}% do ${movie.video?'vídeo':'trailer'} assistido"><span style="width:${percent}%"></span></div>`:''}</div><div class="card-caption"><strong>${esc(movie.title)}</strong><span>${progress?(movie.video?'Vídeo':'Trailer'):movie.minutes+' min'}</span></div></article>`;
+ return `<article class="movie-card${rank?' movie-card--rank':''}" data-movie="${movie.id}"><div class="card-visual">${rank?`<span class="rank-number" aria-hidden="true">${rank}</span>`:''}<button class="card-open" data-action="details" data-id="${movie.id}" data-focus="details-${movie.id}" aria-label="Detalhes de ${esc(movie.title)}" title="${esc(movie.title)}"><img src="${esc(movie.image)}" alt="" loading="lazy" width="640" height="360"></button><span class="card-mark" aria-hidden="true">C</span><span class="card-title-overlay" aria-hidden="true">${esc(movie.title)}</span><div class="card-actions"><button class="round-button round-button--white" data-action="${progress?'resume':'play'}" data-id="${movie.id}" data-focus="play-${movie.id}" aria-label="${progress?'Continuar':'Assistir a'} ${esc(movie.title)}">${icon('play')}</button><button class="round-button" data-action="save" data-id="${movie.id}" data-focus="save-${movie.id}" aria-label="${library.isSaved(movie.id)?'Remover da':'Adicionar à'} minha lista: ${esc(movie.title)}" aria-pressed="${library.isSaved(movie.id)}">${icon(library.isSaved(movie.id)?'check':'plus')}</button></div>${record?`<div class="progress-track" aria-label="${Math.round(percent)}% do ${movie.video?'vídeo':'trailer'} assistido"><span style="width:${percent}%"></span></div>`:''}</div><div class="card-caption"><strong>${esc(movie.title)}</strong><span>${progress?(movie.video?'Vídeo':'Trailer'):movie.minutes+' min'}</span></div></article>`;
 }
 function shelf(title,items,{rank=false,progress=false}={}){
  if(!items.length)return '';const id=`rail-${railCounter++}`;
@@ -66,7 +67,7 @@ function renderMain(){
  if(!validViews.includes(view)){route('home',{},true);return;}
  if(view==='home'&&!genre){
   const movie=findMovie('sintel');const progressIds=library.continueWatching();const progress=progressIds.map(findMovie).filter(m=>m&&available.includes(m));
-  $('main').innerHTML=`<div class="view-content"><section class="hero" aria-label="Destaque: Sintel"><img class="hero-image" src="${movie.hero}" alt="Sintel em uma paisagem montanhosa" fetchpriority="high"><div class="hero-copy"><div class="hero-label"><span aria-hidden="true">N</span> CINEMA ABERTO</div><h1>SINTEL</h1><p class="hero-tagline">Uma jornada. Uma amizade. Um destino.</p><p class="hero-synopsis">Em busca de um pequeno dragão, uma jovem descobre que algumas histórias ficam com a gente para sempre.</p><div class="hero-buttons"><button class="button" data-action="trailer" data-id="sintel" data-focus="hero-play">${icon('play')}Assistir trailer</button><button class="button button--secondary" data-action="details" data-id="sintel" data-focus="hero-details">${icon('info')}Mais informações</button></div></div><div class="hero-edge"><div class="hero-age">${age(10)}<span>Fantasia · 15 min</span></div></div></section><div class="content-rows">${shelf('Continue de onde parou',progress,{progress:true})}${shelf('Acabaram de chegar',available.filter(m=>m.publishedOnline))}${shelf('Sua próxima história favorita',available.slice(0,8))}${shelf('10 histórias para a sua lista',available.slice(0,10),{rank:true})}<div class="feature-band"><div><h2>Grandes histórias. Novas descobertas.</h2><p>Uma seleção de cinema independente para sair do óbvio.</p></div><a href="#/films">Explorar catálogo${icon('right')}</a></div>${shelf('Imaginação sem limites',available.filter(m=>m.genres.includes('Fantasia')||m.genres.includes('Ficção científica')))}${shelf('Para deixar o dia mais leve',available.filter(m=>m.genres.includes('Comédia')))}</div></div>`;
+  $('main').innerHTML=`<div class="view-content"><section class="hero" aria-label="Destaque: Sintel"><img class="hero-image" src="${movie.hero}" alt="Sintel em uma paisagem montanhosa" fetchpriority="high"><div class="hero-copy"><div class="hero-label"><span aria-hidden="true">C</span> CINEMA ABERTO</div><h1>SINTEL</h1><p class="hero-tagline">Uma jornada. Uma amizade. Um destino.</p><p class="hero-synopsis">Em busca de um pequeno dragão, uma jovem descobre que algumas histórias ficam com a gente para sempre.</p><div class="hero-buttons"><button class="button" data-action="trailer" data-id="sintel" data-focus="hero-play">${icon('play')}Assistir trailer</button><button class="button button--secondary" data-action="details" data-id="sintel" data-focus="hero-details">${icon('info')}Mais informações</button></div></div><div class="hero-edge"><div class="hero-age">${age(10)}<span>Fantasia · 15 min</span></div></div></section><div class="content-rows">${shelf('Continue de onde parou',progress,{progress:true})}${shelf('Acabaram de chegar',available.filter(m=>m.publishedOnline))}${shelf('Sua próxima história favorita',available.slice(0,8))}${shelf('10 histórias para a sua lista',available.slice(0,10),{rank:true})}<div class="feature-band"><div><h2>Grandes histórias. Novas descobertas.</h2><p>Uma seleção de cinema independente para sair do óbvio.</p></div><a href="#/films">Explorar catálogo${icon('right')}</a></div>${shelf('Imaginação sem limites',available.filter(m=>m.genres.includes('Fantasia')||m.genres.includes('Ficção científica')))}${shelf('Para deixar o dia mais leve',available.filter(m=>m.genres.includes('Comédia')))}</div></div>`;
  }else{
   let items=filterCatalog(catalog,{query:view==='search'?query:'',genre,kind:view==='animation'?'animation':'all',savedIds:view==='list'?library.savedIds():null,kids:profile.kids});
   if(view==='new')items=[...items].sort((a,b)=>b.year-a.year);
@@ -83,7 +84,7 @@ function openPanel(kind){
  if(currentPanel===kind){closePanel();return;}
  currentPanel=kind;const active=library.activeProfile();
  if(kind==='profiles'){
-  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}<a class="panel-link" href="admin.html">${icon('settings')}Painel do administrador</a><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
+  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}${viewerIsAdmin?`<a class="panel-link" href="admin.html">${icon('settings')}Administrar catálogo</a>`:''}<div class="panel-label">${esc(viewer.email)}</div><button class="panel-link" data-action="sign-out">Sair da conta</button><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
   $('profile-toggle').setAttribute('aria-expanded','true');$('notices-toggle').setAttribute('aria-expanded','false');
  }else{
   const items=noticeMovies();
@@ -167,6 +168,7 @@ document.addEventListener('click',event=>{
  if(!button){if(currentPanel&&!$('header').contains(event.target))closePanel();return;}
  const {action,id}=button.dataset;
  switch(action){
+  case 'sign-out':void cloud.client.auth.signOut({scope:'local'}).then(({error})=>{if(error){toast('Não foi possível sair. Tente novamente.');return;}location.replace(new URL('login.html',location.href).href);}).catch(()=>toast('Confira a conexão para sair.'));break;
   case 'details':details(id);break;
   case 'play':play(id);break;
   case 'trailer':play(id,{trailer:true});break;
@@ -204,6 +206,7 @@ document.addEventListener('change',event=>{if(event.target.id==='genre-filter'){
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&currentPanel){closePanel();$('profile-toggle').focus();}});
 window.addEventListener('hashchange',()=>{closePanel();renderMain();window.scrollTo({top:0,behavior:'instant'});if(getRoute().view==='search')$('global-search').focus({preventScroll:true});});
 window.addEventListener('scroll',()=>{const r=getRoute();$('header').classList.toggle('scrolled',scrollY>24||r.view!=='home'||r.params.has('genre'));},{passive:true});
+if(viewerIsAdmin)$('admin-footer').innerHTML='<a href="admin.html">Administrar catálogo</a>';
 const mobileNames={home:['home','Início'],search:['search','Buscar'],list:['list','Minha lista']};
 document.querySelectorAll('[data-mobile]').forEach(a=>{const [i,label]=mobileNames[a.dataset.mobile];a.innerHTML=icon(i)+`<span>${label}</span>`;});
 renderMain();

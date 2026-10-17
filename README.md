@@ -1,8 +1,8 @@
 # Netflix Web — implementação independente
 
-**[ABRIR O SITE](https://cinema-netflix-rea.woodsy-sloth-2178.chatgpt.site)** · **[PAINEL DE ADMINISTRAÇÃO](https://cinema-netflix-rea.woodsy-sloth-2178.chatgpt.site/admin.html)**
+**[ABRIR O SITE](https://p0blok0wan.github.io/test/)** · **[ENTRAR OU CRIAR CONTA](https://p0blok0wan.github.io/test/login.html)** · **[PAINEL DE ADMINISTRAÇÃO](https://p0blok0wan.github.io/test/admin.html)**
 
-A aba `main` do GitHub exibe os arquivos do projeto. Use os links acima para abrir a aplicação funcionando. A hospedagem permanece privada: entre com a conta ChatGPT autorizada; depois use seu login administrativo no painel.
+A aba `main` do GitHub exibe os arquivos do projeto. O endereço de publicação do site é https://p0blok0wan.github.io/test/. O GitHub Pages serve a interface publicamente; para acessar o catálogo compartilhado, crie uma conta, confirme seu e-mail e entre. O painel exige também autorização administrativa no servidor. Descobrir ou abrir `admin.html` não concede permissão de administração.
 
 Site responsivo funcional, baseado em investigação estática do APK fornecido e em código original. Catálogo com 11 filmes abertos; não utiliza servidores, contas ou conteúdo privado da Netflix.
 
@@ -29,7 +29,7 @@ Abra http://127.0.0.1:4190. Ctrl+C encerra o servidor. A porta pode ser escolhid
 
 ## Funcionalidades
 
-Busca por títulos/gêneros/sinopse, filtros, detalhes, minha lista, avaliações, até 5 perfis com listas separadas, filtro infantil, preferências, progresso real dos trailers e retomada, leitura de novidades, ajuda/créditos e player. Perfil e lista persistem neste navegador; o login de administrador usa Supabase, e as listas não sincronizam entre dispositivos.
+Busca por títulos/gêneros/sinopse, filtros, detalhes, minha lista, avaliações, até 5 perfis com listas separadas, filtro infantil, preferências, progresso real dos trailers e retomada, leitura de novidades, ajuda/créditos e player. Perfil e lista persistem neste navegador; login/cadastro e acesso administrativo usam Supabase, e as listas não sincronizam entre dispositivos. Cadastro comum não permite enviar ou publicar vídeos.
 
 Os trailers de Sintel e Big Buck Bunny estão disponíveis localmente. “Filme completo” usa uma incorporação oficial YouTube e oferece alternativa para abrir no canal do criador. [Créditos e licenças](ASSET-CREDITS.md).
 
@@ -54,11 +54,11 @@ Scripts de browser / HTTP precisam poder lançar processos e abrir loopback. O s
 - dist/: site completo; pode ser servido por uma hospedagem estática.
 - server.mjs: servidor local com suporte Range para vídeos, somente loopback.
 - docs/analysis.md: análise, requisitos, evidências e limitações.
-- docs/browser-results.json: 18 verificações reais de navegador aprovadas.
+- docs/browser-results.json: resultados registrados das verificações de navegador.
 - docs/desktop.png e docs/mobile.png: capturas reais.
-- docs/node-tests.log: 19 testes aprovados.
+- docs/node-tests.log: registro da execução dos testes locais.
 
-Não inclui o APK original nem código decompilado dele. Mantém assets abertos e atribuições. Publicação autorizada pelo usuário. A identidade de hospedagem está em .openai/hosting.json; o relatório de publicação fica em docs/publication.json.
+Não inclui o APK original nem código decompilado dele. Mantém assets abertos e atribuições. Publicação autorizada pelo usuário. A configuração `.openai/hosting.json` e o relatório `docs/publication.json` registram também a hospedagem anterior no Sites; o endereço público principal acima usa GitHub Pages.
 
 ## Seus próprios vídeos
 
@@ -71,7 +71,21 @@ Abra `admin.html` pelo link **Painel do administrador**. O backend é o projeto 
 
 O painel usa e-mail/senha, autorização no banco, uploads TUS, capa opcional, rascunhos e publicação explícita. Catálogo e avisos atualizam com Realtime ou consulta a cada 10 segundos enquanto a página está aberta. Não inclui notificações push com o site fechado.
 
-Leia [o guia do painel](docs/PAINEL-ADMIN.md) e [a configuração do backend](docs/BACKEND.md). Para habilitar o primeiro administrador é necessário autorizar o e-mail dele na lista do servidor, criar a conta e confirmar o e-mail. Uma conta de teste foi criada a pedido do proprietário; o acesso é entregue fora do repositório. Use Alterar minha senha no painel para trocá-la. Para contas reais, a configuração de SMTP e URLs de confirmação/recuperação deve ser feita no painel Supabase; a integração disponível nesta sessão não oferece edição dessas opções.
+Leia [o guia do painel](docs/PAINEL-ADMIN.md), [a configuração do backend](docs/BACKEND.md) e [o controle de acesso de espectadores](docs/VIEWER-ACCESS.md). Para habilitar o primeiro administrador é necessário autorizar o e-mail dele na lista do servidor, criar a conta e confirmar o e-mail. Uma conta de teste foi criada a pedido do proprietário; o acesso é entregue fora do repositório. Use Alterar minha senha no painel para trocá-la.
+
+### Configurar cadastro, confirmação e recuperação de senha
+
+No painel Supabase do projeto, em **Authentication → URL Configuration**, configurar:
+
+- **Site URL:** `https://p0blok0wan.github.io/test/`
+- **Redirect URLs:** `https://p0blok0wan.github.io/test/login.html` e `https://p0blok0wan.github.io/test/admin.html`
+- Para desenvolvimento local, adicionar separadamente `http://127.0.0.1:4190/login.html` e `http://127.0.0.1:4190/admin.html`, somente se utilizados.
+
+O formulário de espectador usa `login.html` para confirmação e recuperação; o painel usa `admin.html`. São páginas estáticas existentes, sem rotas de servidor. Preservar o prefixo `/test/` e não usar curingas amplos. Manter a confirmação de e-mail habilitada e o login anônimo do Supabase desabilitado.
+
+Em **Authentication → Email → SMTP Settings**, configurar SMTP próprio legítimo: host, porta, usuário, senha do provedor e remetente verificado. Guardar a senha apenas nas configurações privadas do serviço. Conferir também as cotas e limites de envio do provedor. O envio padrão de desenvolvimento do Supabase é restrito e não garante mensagens a todos os usuários reais. Falhas no envio precisam ser corrigidas no SMTP; não desabilitar a confirmação de e-mail para contorná-las.
+
+Aplicar `backend/viewer-access.sql` como migração `cinema_viewer_access`, depois das migrações existentes: visitantes sem sessão não recebem os títulos do banco nem conseguem gerar links assinados de mídia. Contas confirmadas veem os títulos publicados; somente a allowlist administrativa permite escrita. Arquivos estáticos do GitHub Pages e vídeos públicos do Drive continuam públicos. Verificar cadastro, mensagem recebida, confirmação, login, logout e recuperação com uma caixa de e-mail autorizada; testes com sessões existentes não comprovam entrega de e-mail.
 
 O upload direto ao Supabase está limitado a **50 MiB por vídeo**, com **5 MiB por capa**. Filmes longos precisam de cotas/serviço adequados. O plano pago não foi contratado. Novos uploads ficam no Storage, não no GitHub.
 
@@ -85,7 +99,7 @@ npm run test:browser
 npm run test:admin
 ```
 
-`test:admin` usa backend simulado para verificar a interface. `test:security` exige sessões temporárias reais em variáveis de ambiente; sem elas, registra skip. `tests/cloud-browser.mjs` recebe credenciais de contas temporárias por stdin e testa login, upload e atualização de outro navegador contra Supabase real. Nunca grave essas credenciais em arquivos ou Git.
+`test:admin` usa backend simulado para verificar a interface. `test:security` exige sessões temporárias reais em variáveis de ambiente; sem elas, registra skip. O teste específico de espectadores pode ser executado com `node --test --test-isolation=none tests/viewer-access.test.mjs`, usando as mesmas variáveis documentadas no [guia de acesso](docs/VIEWER-ACCESS.md). `tests/cloud-browser.mjs` recebe credenciais de contas temporárias por stdin e testa login, upload e atualização de outro navegador contra Supabase real. Nunca grave essas credenciais em arquivos ou Git.
 
 
 ## Buscar título, descrição e classificação
@@ -95,3 +109,5 @@ O painel possui **Informações do filme**: digite o título, busque, selecione 
 É necessário obter sua própria chave gratuita para uso não comercial em https://www.themoviedb.org/settings/api e cadastrá-la em **Configurar chave do TMDB** no painel. Nunca envie a chave no chat ou no GitHub. O segredo fica no backend protegido. O código já está integrado e a função Supabase `movie-metadata` está publicada, mas consultas reais ao TMDB dependem dessa credencial.
 
 Leia [como configurar e usar](docs/METADADOS.md) e [a documentação técnica](docs/TMDB.md). Os testes da busca usam respostas controladas, pois nenhuma chave real do TMDB foi fornecida. A verificação real do backend cobre autenticação, segredo inacessível, integração sem chave e erros de configuração.
+
+Guia de publicação, contas e envio de vídeos: [docs/GITHUB-PAGES.md](docs/GITHUB-PAGES.md).

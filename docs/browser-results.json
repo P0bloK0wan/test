@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "checkedAt": "2026-10-17T13:30:10.674Z",
+  "checkedAt": "2026-10-17T13:50:11.042Z",
   "checks": [
     {
       "label": "Home renders original Sintel hero and eleven catalog titles",

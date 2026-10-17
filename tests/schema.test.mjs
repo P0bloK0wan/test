@@ -9,7 +9,7 @@ const key = process.env.CINEMA_TEST_PUBLISHABLE_KEY;
 const admin = process.env.CINEMA_TEST_ADMIN_JWT;
 const viewer = process.env.CINEMA_TEST_VIEWER_JWT;
 
-test('live RLS: only verified allowlisted admin can publish; draft media stays private', {
+test('live RLS: login required for catalogue; only verified allowlisted admin can publish', {
   skip: !(url && key && admin && viewer) && 'Requires dedicated live project and two temporary test sessions',
 }, async () => {
   const id = randomUUID();
@@ -50,12 +50,14 @@ test('live RLS: only verified allowlisted admin can publish; draft media stays p
       assert.ok(update.status >= 400 || JSON.stringify(await update.json()) === '[]', 'Viewer cannot publish');
     }
     assert.ok((await json(`${route}?id=eq.${id}`, admin, 'PATCH', { status: 'published' })).ok);
-    for (const token of [undefined, viewer]) {
-      assert.deepEqual(await (await api(`${route}?id=eq.${id}&select=id`, token)).json(), [{ id }]);
-      assert.ok((await sign(token)).ok, 'Published cover can be signed');
-    }
+    assert.deepEqual(await (await api(`${route}?id=eq.${id}&select=id,title`, undefined)).json(), [], 'Anon cannot read published titles');
+    assert.ok((await sign(undefined)).status >= 400, 'Anon cannot sign published media');
+    assert.deepEqual(await (await api(`${route}?id=eq.${id}&select=id`, viewer)).json(), [{ id }]);
+    assert.ok((await sign(viewer)).ok, 'Authenticated viewer can sign published cover');
     assert.ok((await json(`${route}?id=eq.${id}`, admin, 'PATCH', { status: 'draft' })).ok);
-    assert.ok((await sign(undefined)).status >= 400, 'Unpublishing prevents new signatures');
+    assert.ok((await sign(viewer)).status >= 400, 'Unpublishing prevents new viewer signatures');
+    assert.deepEqual(await (await api(`${route}?id=eq.${id}&select=id`, viewer)).json(), [], 'Unpublished title is hidden from viewers');
+    assert.ok((await sign(admin)).ok, 'Admin retains draft access');
   } finally {
     await api(`${route}?id=eq.${id}`, admin, { method: 'DELETE' });
     await json('/storage/v1/object/cinema-media', admin, 'DELETE', { prefixes: [imagePath, videoPath] });
