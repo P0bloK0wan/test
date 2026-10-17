@@ -1,3 +1,4 @@
+import {initAdminWizard} from './admin-wizard.mjs';
 import { cloud } from './cloud-client.mjs';
 import { parseGoogleDriveLink } from './drive-link.mjs';
 import { initMetadataPanel } from './metadata-panel.mjs';
@@ -5,6 +6,7 @@ import { initMetadataPanel } from './metadata-panel.mjs';
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 let metadataCleanup=null;
+let videoWizard=null;
 let authMode = 'login';
 let busy = false;
 let authorized = false;
@@ -72,6 +74,7 @@ async function refreshAccess() {
     if (error && data?.user) throw error;
     const user = data?.user;
     authorized = user ? Boolean(await cloud.isAdmin()) : false;
+    if(!authorized)videoWizard?.clearPreview();
     if (current !== revision) return;
     $('auth').hidden = Boolean(user) && authMode !== 'recovery';
     $('denied').hidden = !user || authorized || authMode === 'recovery';
@@ -229,3 +232,5 @@ else {
   });
   refreshAccess();
 }
+
+videoWizard=initAdminWizard({form:$('video-form'),maxVideoBytes});

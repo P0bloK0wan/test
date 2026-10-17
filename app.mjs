@@ -1,5 +1,7 @@
 import {catalog, genres, findMovie, replaceCloudMovies} from './catalog.mjs';
 import {createLibrary} from './library.mjs';
+import {AVATARS,avatarArt} from './avatars.mjs';
+import {mountStreamlabPlayer} from './streamlab-player.mjs';
 import {filterCatalog} from './catalog-query.mjs';
 import {initMotion} from './motion.mjs';
 import {cloud} from './cloud-client.mjs';
@@ -23,7 +25,16 @@ const paths = {
  external:'<path d="M14 3h7v7M21 3l-9 9M10 4H4v16h16v-6"/>', download:'<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',
 };
 const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.info}</svg>`;
-let storage;try{const local=window.localStorage;const suffix='.'+viewer.id;storage={getItem:key=>local.getItem(key+suffix),setItem:(key,value)=>local.setItem(key+suffix,value)};}catch{}
+let storage,rawStorage,librarySync=null,syncConflict=false,syncState={state:'offline',message:'Dados salvos neste navegador.'};
+try{rawStorage=window.localStorage;const suffix='.'+viewer.id;storage={getItem:key=>rawStorage.getItem(key+suffix),setItem:(key,value)=>rawStorage.setItem(key+suffix,value)};}catch{}
+function updateSyncStatus(value=syncState){
+ syncState=value||syncState;if(syncState.state==='conflict')syncConflict=true;else if(syncState.state==='synced')syncConflict=false;const status=$('library-sync-status');if(!status)return;
+ status.dataset.state=syncState.state;status.querySelector('[data-sync-message]').textContent=syncState.message||'Dados salvos neste navegador.';
+ status.querySelector('[data-sync-conflict]').hidden=!syncConflict;
+}
+if(cloud.ready&&typeof cloud.client?.from==='function'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(viewer?.id||'')){
+ try{const {createLibrarySync}=await import('./library-sync.mjs');librarySync=await createLibrarySync({client:cloud.client,userId:viewer.id,storage:rawStorage,onStatus:updateSyncStatus});storage=librarySync.storage;syncState=librarySync.status();}catch{syncState={state:'offline',message:'Sem conexão para sincronizar. Suas alterações continuam neste navegador.'};}
+}
 const library=createLibrary(storage);
 const dialog=$('dialog');
 let cleanupMotion=()=>{};
@@ -39,14 +50,14 @@ function route(view,params={},replace=false){
 }
 function toast(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').classList.add('visible');toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3200);}
 function checkPersistence(){if(library.lastError())toast('Sua alteração vale nesta sessão, mas não pôde ser salva no navegador.');}
-function avatar(profile,small=false){return `<span class="avatar avatar--${esc(profile.color)}${small?' avatar--small':''}" aria-hidden="true"></span>`;}
+function avatar(profile,small=false){return `<span class="avatar avatar--${esc(profile.color)}${small?' avatar--small':''}${profile.avatar&&profile.avatar!=='classic'?' avatar--art':''}" aria-hidden="true">${avatarArt(profile.avatar)}</span>`;}
 function updateHeader(){
  const {view,params}=getRoute();const profile=library.activeProfile();
- $('active-avatar').className=`avatar avatar--small avatar--${profile.color}`;
+ $('active-avatar').className=`avatar avatar--small avatar--${profile.color}${profile.avatar!=='classic'?' avatar--art':''}`;$('active-avatar').innerHTML=avatarArt(profile.avatar);
  $('profile-toggle').setAttribute('aria-label',`Abrir menu de perfis. Perfil atual: ${profile.name}`);
  $('header').classList.toggle('scrolled',scrollY>24||view!=='home'||params.has('genre'));
  document.querySelectorAll('[data-view]').forEach(a=>{if(a.dataset.view===view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
- document.querySelectorAll('[data-mobile]').forEach(a=>{const target=a.dataset.mobile;const active=target===view||(target==='home'&&!['search','list'].includes(view));if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+ document.querySelectorAll('[data-mobile]').forEach(a=>{const target=a.dataset.mobile;const active=target===view||(target==='home'&&!['search','list','me'].includes(view));if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  const input=$('global-search');input.hidden=view!=='search';if(input.value!==(params.get('q')||''))input.value=params.get('q')||'';
  const unread=library.unreadNotices(noticeMovies().map(m=>m.id)).length;
  $('notices-toggle').innerHTML=icon('bell')+(unread?'<span class="notice-dot" aria-hidden="true"></span>':'');
@@ -60,12 +71,20 @@ function shelf(title,items,{rank=false,progress=false}={}){
  return `<section class="shelf" aria-label="${esc(title)}"><div class="section-heading"><h2>${esc(title)}</h2><a href="#/films" class="section-link"><span class="explore-text">Explorar todos</span>${icon('right')}</a></div><div class="rail-wrapper"><button class="rail-arrow rail-arrow--prev" data-action="rail" data-target="${id}" data-direction="-1" aria-label="Voltar em ${esc(title)}">${icon('left')}</button><div id="${id}" class="rail-track${rank?' ranking-track':''}">${items.map((m,i)=>card(m,{rank:rank?i+1:0,progress})).join('')}</div><button class="rail-arrow rail-arrow--next" data-action="rail" data-target="${id}" data-direction="1" aria-label="Avançar em ${esc(title)}">${icon('right')}</button></div></section>`;
 }
 function genreSelect(value=''){return `<select id="genre-filter" class="filter-select" aria-label="Filtrar por gênero"><option value="">Todos os gêneros</option>${genres.map(g=>`<option value="${esc(g)}" ${g===value?'selected':''}>${esc(g)}</option>`).join('')}</select>`;}
+function personalPage(profile,available){
+ const visible=ids=>ids.map(findMovie).filter(m=>m&&available.includes(m));
+ const progress=visible(library.continueWatching()),liked=visible(library.likedIds()),saved=visible(library.savedIds());
+ const collection=(title,items,{progress=false,empty,link='films'}={})=>`<section class="personal-collection" aria-label="${title}"><div class="personal-heading"><h2>${title}</h2><span>${items.length} ${items.length===1?'título':'títulos'}</span></div>${items.length?`<div class="personal-grid">${items.map(m=>card(m,{progress})).join('')}</div>`:`<div class="personal-empty"><p>${empty}</p><a href="#/${link}">Explorar filmes ${icon('right')}</a></div>`}</section>`;
+ return `<section class="personal-page view-content"><div class="personal-profile">${avatar(profile)}<div><p class="personal-eyebrow">MINHA STREAMLAB</p><h1>${esc(profile.name)}</h1><p>Suas histórias, do seu jeito.${profile.kids?' Perfil infantil.':''}</p></div><button class="button button--outline" data-action="edit-profile" data-profile="${esc(profile.id)}">${icon('edit')}Editar perfil e avatar</button></div><div class="personal-summary"><span><strong>${saved.length}</strong> na minha lista</span><span><strong>${liked.length}</strong> curtidos</span><span><strong>${progress.length}</strong> para continuar</span><button data-action="profiles">Gerenciar perfis</button></div><div id="library-sync-status" class="library-sync" role="status" aria-live="polite"><span data-sync-message></span><div data-sync-conflict hidden><p>Existem alterações diferentes nesta conta. Escolha qual versão continuar usando. A versão deste aparelho fica preservada até você escolher.</p><button class="button button--outline" data-action="sync-choice" data-choice="local">Usar deste aparelho</button><button class="button button--outline" data-action="sync-choice" data-choice="remote">Usar da conta</button></div></div>${collection('Continue assistindo',progress,{progress:true,empty:'Seus vídeos e trailers iniciados aparecem aqui. O progresso de players externos, como Google Drive e YouTube, não é salvo.'})}${collection('Você curtiu',liked,{empty:'Gostou de uma história? Avalie com Gostei ou Adorei nos detalhes para encontrá-la aqui.'})}${collection('Minha lista',saved,{empty:'Guarde histórias com o botão + e volte quando quiser.'})}</section>`;
+}
 function renderMain(){
  const {view,params}=getRoute();const profile=library.activeProfile();const query=params.get('q')||'',genre=params.get('genre')||'';
  const available=filterCatalog(catalog,{kids:profile.kids});railCounter=0;
- const validViews=['home','films','animation','new','list','search'];
+ const validViews=['home','films','animation','new','list','search','me'];
  if(!validViews.includes(view)){route('home',{},true);return;}
- if(view==='home'&&!genre){
+ if(view==='me'){
+  $('main').innerHTML=personalPage(profile,available);
+ }else if(view==='home'&&!genre){
   const movie=findMovie('sintel');const progressIds=library.continueWatching();const progress=progressIds.map(findMovie).filter(m=>m&&available.includes(m));
   $('main').innerHTML=`<div class="view-content"><section class="hero" aria-label="Destaque: Sintel"><img class="hero-image" src="${movie.hero}" alt="Sintel em uma paisagem montanhosa" fetchpriority="high"><div class="hero-copy"><div class="hero-label"><span aria-hidden="true">C</span> CINEMA ABERTO</div><h1>SINTEL</h1><p class="hero-tagline">Uma jornada. Uma amizade. Um destino.</p><p class="hero-synopsis">Em busca de um pequeno dragão, uma jovem descobre que algumas histórias ficam com a gente para sempre.</p><div class="hero-buttons"><button class="button" data-action="trailer" data-id="sintel" data-focus="hero-play">${icon('play')}Assistir trailer</button><button class="button button--secondary" data-action="details" data-id="sintel" data-focus="hero-details">${icon('info')}Mais informações</button></div></div><div class="hero-edge"><div class="hero-age">${age(10)}<span>Fantasia · 15 min</span></div></div></section><div class="content-rows">${shelf('Continue de onde parou',progress,{progress:true})}${shelf('Acabaram de chegar',available.filter(m=>m.publishedOnline))}${shelf('Sua próxima história favorita',available.slice(0,8))}${shelf('10 histórias para a sua lista',available.slice(0,10),{rank:true})}<div class="feature-band"><div><h2>Grandes histórias. Novas descobertas.</h2><p>Uma seleção de cinema independente para sair do óbvio.</p></div><a href="#/films">Explorar catálogo${icon('right')}</a></div>${shelf('Imaginação sem limites',available.filter(m=>m.genres.includes('Fantasia')||m.genres.includes('Ficção científica')))}${shelf('Para deixar o dia mais leve',available.filter(m=>m.genres.includes('Comédia')))}</div></div>`;
  }else{
@@ -77,14 +96,14 @@ function renderMain(){
   const empty=view==='list'?`${icon('list')}<h2>Sua lista começa com uma boa história.</h2><p>Toque no símbolo + de um filme para guardá-lo aqui. Esta lista é só do perfil ${esc(profile.name)}.</p><a class="button" href="#/films">Explorar filmes</a>`:`${icon('search')}<h2>Nenhuma história por aqui. Ainda.</h2><p>Tente outro título ou escolha um gênero diferente.</p><button class="button button--outline" data-action="reset-search">Limpar filtros</button>`;
   $('main').innerHTML=`<section class="catalog-page view-content"><div class="page-heading"><h1 id="page-title" tabindex="-1">${esc(titles[view])}</h1>${view!=='search'?genreSelect(genre):''}</div><p class="page-subtitle" id="result-status" role="status">${esc(subtitles[view])}</p>${chips}${items.length?`<div class="catalog-grid" id="catalog-grid">${items.map(m=>card(m)).join('')}</div>`:`<div class="empty-state">${empty}</div>`}</section>`;
  }
- updateHeader();cleanupMotion();cleanupMotion=initMotion($('main'));
+ updateHeader();updateSyncStatus();cleanupMotion();cleanupMotion=initMotion($('main'));
 }
 function closePanel(){currentPanel=null;$('header-panel').hidden=true;$('profile-toggle').setAttribute('aria-expanded','false');$('notices-toggle').setAttribute('aria-expanded','false');}
 function openPanel(kind){
  if(currentPanel===kind){closePanel();return;}
  currentPanel=kind;const active=library.activeProfile();
  if(kind==='profiles'){
-  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}${viewerIsAdmin?`<a class="panel-link" href="admin.html">${icon('settings')}Administrar catálogo</a>`:''}<div class="panel-label">${esc(viewer.email)}</div><button class="panel-link" data-action="sign-out">Sair da conta</button><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
+  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}${viewerIsAdmin?`<a class="panel-link" href="admin.html">${icon('settings')}Administrar catálogo</a>`:''}<div class="panel-label">${esc(viewer.email)}</div><button class="panel-link" data-action="sign-out">Sair da conta</button><a class="panel-link" href="#/me">${icon('heart')}Minha Streamlab</a><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
   $('profile-toggle').setAttribute('aria-expanded','true');$('notices-toggle').setAttribute('aria-expanded','false');
  }else{
   const items=noticeMovies();
@@ -132,13 +151,14 @@ function openPlayer(m,{trailer=false,resume=false,temporary=false,onClose=()=>{}
  openDialog(`<div class="player-topbar">${closeButton('Fechar reprodução')}<h1 id="dialog-title">${esc(m.title)}<span>${subtitle}</span></h1></div><div class="player-stage">${stage}</div>${footer}<div class="video-error" id="video-error" hidden><strong>Não foi possível reproduzir agora.</strong>${error}</div>`,{player:true});
  if(native){
   const video=$('movie-video');const errorPanel=$('video-error');const controller=new AbortController();const signal=controller.signal;let lastSaved=0;
+  const cleanupControls=mountStreamlabPlayer(video,{title:m.title});
   const save=()=>{if(!temporary&&Number.isFinite(video.duration)&&video.duration>0&&findMovie(m.id)){try{library.recordProgress(m.id,video.currentTime,video.duration);}catch{/* Title may have been removed while playing. */}}};
   video.muted=pref.muted;
   video.addEventListener('loadedmetadata',()=>{const record=temporary?null:library.progress(m.id);if(resume&&record&&record.seconds<video.duration*.95)video.currentTime=record.seconds;if(pref.autoplay)video.play().catch(()=>{});},{once:true,signal});
   video.addEventListener('timeupdate',()=>{if(Date.now()-lastSaved>1000){save();lastSaved=Date.now();}},{signal});
   video.addEventListener('ended',save,{signal});video.addEventListener('pause',save,{signal});
   video.addEventListener('error',()=>{errorPanel.hidden=false;},{signal});
-  playerCleanup=()=>{save();controller.abort();video.pause();video.removeAttribute('src');video.load();onClose();};
+  playerCleanup=()=>{save();controller.abort();cleanupControls();video.pause();video.removeAttribute('src');video.load();onClose();};
  }
 }
 function playLocalFile(file){
@@ -150,25 +170,26 @@ function playLocalFile(file){
 
 function profiles(){
  const active=library.activeProfile();const list=library.snapshot().profiles;
- openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Quem está assistindo?</h1><p>Cada perfil tem sua própria lista, avaliações e histórias para continuar.</p><div class="profile-list">${list.map(p=>`<button class="profile-tile${p.id===active.id?' active':''}" data-action="edit-profile" data-profile="${esc(p.id)}" aria-label="Editar perfil ${esc(p.name)}">${avatar(p)}<span>${esc(p.name)}</span><span class="edit-mark" aria-hidden="true">${icon('edit')}</span></button>`).join('')}${list.length<5?`<button class="profile-tile" data-action="new-profile"><span class="profile-add">${icon('plus')}</span><span>Adicionar perfil</span></button>`:''}</div><p class="small-note">Até 5 perfis neste navegador.</p><button class="button" data-action="close">Concluído</button></section>`);
+ openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Quem está assistindo?</h1><p>Cada perfil tem sua própria lista, avaliações e histórias para continuar.</p><div class="profile-list">${list.map(p=>`<button class="profile-tile${p.id===active.id?' active':''}" data-action="edit-profile" data-profile="${esc(p.id)}" aria-label="Editar perfil ${esc(p.name)}">${avatar(p)}<span>${esc(p.name)}</span><span class="edit-mark" aria-hidden="true">${icon('edit')}</span></button>`).join('')}${list.length<5?`<button class="profile-tile" data-action="new-profile"><span class="profile-add">${icon('plus')}</span><span>Adicionar perfil</span></button>`:''}</div><p class="small-note">Até 5 perfis na sua biblioteca.</p><button class="button" data-action="close">Concluído</button></section>`);
 }
+function avatarPicker(profile){return `<div class="avatar-picker"><span class="field-label">Escolha seu avatar</span>${[...new Set(AVATARS.map(a=>a.category))].map(category=>`<fieldset><legend>${category}</legend><div class="avatar-options">${AVATARS.filter(a=>a.category===category).map(a=>`<button type="button" class="avatar-option" data-action="avatar-choice" data-avatar="${a.id}" aria-label="${a.name}" aria-pressed="${(profile.avatar||'classic')===a.id}">${avatar({...profile,avatar:a.id})}<span>${a.name}</span></button>`).join('')}</div></fieldset>`).join('')}<input type="hidden" name="avatar" value="${profile.avatar||'classic'}"></div>`;}
 function profileForm(id=null){
- const profile=id?library.snapshot().profiles.find(p=>p.id===id):{name:'',color:'blue',kids:false};if(!profile)return;
+ const profile=id?library.snapshot().profiles.find(p=>p.id===id):{name:'',color:'blue',kids:false,avatar:'classic'};if(!profile)return;
  const canDelete=id&&library.snapshot().profiles.length>1;
- openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">${id?'Editar perfil':'Adicionar perfil'}</h1><p>Dê a este espaço o seu jeito.</p><form id="profile-form" data-profile="${esc(id||'')}"><label class="field-label" for="profile-name">Nome do perfil</label><input class="text-input" id="profile-name" name="name" value="${esc(profile.name)}" maxlength="24" placeholder="Como você quer ser chamado?" required autocomplete="off"><span class="field-label">Escolha uma cor</span><div class="color-choices" aria-label="Cor do perfil">${['red','blue','teal','gold','violet'].map(c=>`<button type="button" class="color-choice color-choice--${c}" data-action="color" data-color="${c}" aria-label="${{red:'Vermelho',blue:'Azul',teal:'Verde',gold:'Dourado',violet:'Violeta'}[c]}" aria-pressed="${c===profile.color}"><span></span></button>`).join('')}</div><input type="hidden" name="color" value="${profile.color}"><label class="checkbox-label"><input type="checkbox" name="kids" ${profile.kids?'checked':''}>Perfil infantil</label><p class="small-note">Exibe apenas títulos com indicação editorial de até 10 anos.</p><p class="form-error" id="profile-error" role="alert"></p><div class="form-actions"><button class="button" type="submit">Salvar perfil</button><button class="button button--outline" type="button" data-action="profiles">Cancelar</button>${canDelete?`<button class="button button--outline" type="button" data-action="delete-profile" data-profile="${esc(id)}">Excluir</button>`:''}</div></form></section>`);
+ openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">${id?'Editar perfil':'Adicionar perfil'}</h1><p>Dê a este espaço o seu jeito.</p><form id="profile-form" data-profile="${esc(id||'')}"><label class="field-label" for="profile-name">Nome do perfil</label><input class="text-input" id="profile-name" name="name" value="${esc(profile.name)}" maxlength="24" placeholder="Como você quer ser chamado?" required autocomplete="off">${avatarPicker(profile)}<span class="field-label">Escolha uma cor</span><div class="color-choices" aria-label="Cor do perfil">${['red','blue','teal','gold','violet'].map(c=>`<button type="button" class="color-choice color-choice--${c}" data-action="color" data-color="${c}" aria-label="${{red:'Vermelho',blue:'Azul',teal:'Verde',gold:'Dourado',violet:'Violeta'}[c]}" aria-pressed="${c===profile.color}"><span></span></button>`).join('')}</div><input type="hidden" name="color" value="${profile.color}"><label class="checkbox-label"><input type="checkbox" name="kids" ${profile.kids?'checked':''}>Perfil infantil</label><p class="small-note">Exibe apenas títulos com indicação editorial de até 10 anos.</p><p class="form-error" id="profile-error" role="alert"></p><div class="form-actions"><button class="button" type="submit">Salvar perfil</button><button class="button button--outline" type="button" data-action="profiles">Cancelar</button>${canDelete?`<button class="button button--outline" type="button" data-action="delete-profile" data-profile="${esc(id)}">Excluir</button>`:''}</div></form></section>`);
  $('profile-name')?.focus();
 }
 function preferences(){const pref=library.preferences();openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Do seu jeito</h1><p>Preferências de reprodução do perfil ${esc(library.activeProfile().name)}.</p><label class="settings-row"><div><strong>Iniciar trailers automaticamente</strong><p>Reproduzir ao abrir um trailer. A página inicial permanece silenciosa.</p></div><input id="pref-autoplay" type="checkbox" ${pref.autoplay?'checked':''}></label><label class="settings-row"><div><strong>Começar com o som desativado</strong><p>Você pode ativar o áudio nos controles do vídeo.</p></div><input id="pref-muted" type="checkbox" ${pref.muted?'checked':''}></label><div class="form-actions"><button class="button" data-action="save-preferences">Salvar preferências</button></div><p class="small-note">Estas opções se aplicam aos trailers disponíveis neste site.</p></section>`);}
 function credits(){openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Créditos do catálogo</h1><section aria-label="Dados de filmes TMDB"><a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer"><img src="assets/tmdb.svg" alt="TMDB" width="120" style="height:auto"></a><p>Integração opcional para informações de filmes.</p><p lang="en">This product uses the TMDB API but is not endorsed or certified by TMDB.</p></section><p>Histórias abertas, feitas por pessoas talentosas. Conheça quem criou cada filme.</p><ul class="credits-list">${catalog.map(m=>`<li><a href="${esc(m.source)}" target="_blank" rel="noopener noreferrer">${esc(m.title)}</a><span>${m.year} · Direção: ${esc(m.director)}</span><span>${esc(m.credit)}</span></li>`).join('')}</ul><p class="small-note">Artes: <a href="https://studio.blender.org/terms-and-conditions/" target="_blank" rel="noopener noreferrer">Creative Commons Atribuição 4.0</a>. Trailers de Sintel e Big Buck Bunny: Blender Foundation, CC BY 3.0, hospedados originalmente pelo W3C. Filmes completos: incorporações dos canais oficiais. Sinopses em português e experiência web são independentes.</p></section>`);}
-function help(){openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Vamos encontrar sua próxima história?</h1><div class="help-list"><h3>Explore sem pressa</h3><p>Busque por um título, uma ideia ou um gênero. Nos trilhos, deslize para ver mais filmes.</p><h3>Uma lista só sua</h3><p>Use o + para guardar um filme. Ao trocar de perfil, você encontra uma lista diferente.</p><h3>Vídeos do seu aparelho</h3><p>Abra o menu do perfil ou o rodapé e toque em Abrir vídeo do aparelho. Escolha um arquivo, preferencialmente MP4. Ele não é enviado e fica disponível apenas nesta reprodução. Para compartilhar no catálogo, o responsável precisa hospedar o vídeo e republicar o site.</p><h3>Continue depois</h3><p>O progresso dos trailers e vídeos próprios do catálogo fica salvo. Volte à página inicial para continuar de onde parou.</p><h3>Cinema aberto</h3><p>Os filmes completos são exibidos pelos canais oficiais do Blender Studio. Os trailers de Sintel e Big Buck Bunny também estão disponíveis aqui para assistir e baixar.</p><h3>Seus dados ficam aqui</h3><p>Perfis e preferências ficam neste navegador. Limpar os dados do site também remove essas informações. Nenhuma conta da Netflix é necessária.</p></div></section>`);}
-function saveMovie(id){try{const saved=library.toggleSaved(id);updateSavedButtons(id);if(getRoute().view==='list'&&!dialog.open)renderMain();toast(saved?'Adicionado à sua lista.':'Removido da sua lista.');checkPersistence();}catch{toast('Não foi possível alterar sua lista.');}}
+function help(){openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Vamos encontrar sua próxima história?</h1><div class="help-list"><h3>Explore sem pressa</h3><p>Busque por um título, uma ideia ou um gênero. Nos trilhos, deslize para ver mais filmes.</p><h3>Uma lista só sua</h3><p>Use o + para guardar um filme. Ao trocar de perfil, você encontra uma lista diferente.</p><h3>Vídeos do seu aparelho</h3><p>Abra o menu do perfil ou o rodapé e toque em Abrir vídeo do aparelho. Escolha um arquivo, preferencialmente MP4. Ele não é enviado e fica disponível apenas nesta reprodução. Para compartilhar no catálogo, um administrador pode cadastrar o link público do Drive ou enviar um MP4 pelo painel.</p><h3>Continue depois</h3><p>O progresso dos trailers e vídeos próprios do catálogo fica salvo. Volte à página inicial para continuar de onde parou.</p><h3>Cinema aberto</h3><p>Os filmes completos são exibidos pelos canais oficiais do Blender Studio. Os trailers de Sintel e Big Buck Bunny também estão disponíveis aqui para assistir e baixar.</p><h3>Sua biblioteca</h3><p>Sua biblioteca pertence à conta conectada. A área Minha Streamlab mostra quando há alterações pendentes ou sem conexão. Alterações locais ficam neste navegador até a sincronização.</p></div></section>`);}
+function saveMovie(id){try{const saved=library.toggleSaved(id);updateSavedButtons(id);if(['list','me'].includes(getRoute().view)&&!dialog.open)renderMain();toast(saved?'Adicionado à sua lista.':'Removido da sua lista.');checkPersistence();}catch{toast('Não foi possível alterar sua lista.');}}
 
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');
  if(!button){if(currentPanel&&!$('header').contains(event.target))closePanel();return;}
  const {action,id}=button.dataset;
  switch(action){
-  case 'sign-out':void cloud.client.auth.signOut({scope:'local'}).then(({error})=>{if(error){toast('Não foi possível sair. Tente novamente.');return;}location.replace(new URL('login.html',location.href).href);}).catch(()=>toast('Confira a conexão para sair.'));break;
+  case 'sign-out':void (async()=>{if(librarySync){await librarySync.flush();}return cloud.client.auth.signOut({scope:'local'});})().then(({error})=>{if(error){toast('Não foi possível sair. Tente novamente.');return;}librarySync?.dispose();location.replace(new URL('login.html',location.href).href);}).catch(()=>toast('Confira a conexão para sair.'));break;
   case 'details':details(id);break;
   case 'play':play(id);break;
   case 'trailer':play(id,{trailer:true});break;
@@ -179,6 +200,8 @@ document.addEventListener('click',event=>{
   case 'rail':{const rail=$(button.dataset.target);rail?.scrollBy({left:rail.clientWidth*.8*Number(button.dataset.direction),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});break;}
   case 'genre':{const r=getRoute();route(r.view,{q:r.params.get('q')||'',genre:r.params.get('genre')===button.dataset.genre?'':button.dataset.genre});break;}
   case 'reset-search':route(getRoute().view==='list'?'list':'search',{},true);$('global-search').focus();break;
+  case 'sync-choice':if(librarySync){const choices=[...document.querySelectorAll('[data-action="sync-choice"]')];choices.forEach(b=>b.disabled=true);void librarySync.resolveConflict(button.dataset.choice).then(()=>{if(librarySync.status().state==='synced')location.reload();else toast('A escolha foi mantida neste aparelho. Aguarde a conexão para concluir.');}).catch(()=>toast('Não foi possível resolver agora. Sua versão local foi preservada.')).finally(()=>choices.forEach(b=>b.disabled=false));}break;
+  case 'avatar-choice':{const form=$('profile-form');form.elements.avatar.value=button.dataset.avatar;form.querySelectorAll('[data-action="avatar-choice"]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));break;}
   case 'profiles':profiles();break;
   case 'new-profile':profileForm();break;
   case 'edit-profile':profileForm(button.dataset.profile);break;
@@ -195,7 +218,7 @@ document.addEventListener('click',event=>{
 });
 document.addEventListener('submit',event=>{
  if(event.target.id!=='profile-form')return;event.preventDefault();const form=event.target;
- try{library.saveProfile({id:form.dataset.profile||undefined,name:form.elements.name.value,color:form.elements.color.value,kids:form.elements.kids.checked});profiles();renderMain();toast('Perfil salvo.');checkPersistence();}catch(error){$('profile-error').textContent=error instanceof RangeError?'Use um nome entre 1 e 24 caracteres e mantenha até 5 perfis.':'Confira os dados do perfil.';}
+ try{library.saveProfile({id:form.dataset.profile||undefined,name:form.elements.name.value,color:form.elements.color.value,kids:form.elements.kids.checked,avatar:form.elements.avatar.value});profiles();renderMain();toast('Perfil salvo.');checkPersistence();}catch(error){$('profile-error').textContent=error instanceof RangeError?'Use um nome entre 1 e 24 caracteres e mantenha até 5 perfis.':'Confira os dados do perfil.';}
 });
 document.querySelector('.skip-link').addEventListener('click',event=>{event.preventDefault();$('main').focus({preventScroll:true});$('main').scrollIntoView({block:'start',behavior:'instant'});});
 $('search-toggle').innerHTML=icon('search');$('search-toggle').addEventListener('click',()=>{route('search');requestAnimationFrame(()=>$('global-search').focus());});
@@ -207,7 +230,7 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&currentPane
 window.addEventListener('hashchange',()=>{closePanel();renderMain();window.scrollTo({top:0,behavior:'instant'});if(getRoute().view==='search')$('global-search').focus({preventScroll:true});});
 window.addEventListener('scroll',()=>{const r=getRoute();$('header').classList.toggle('scrolled',scrollY>24||r.view!=='home'||r.params.has('genre'));},{passive:true});
 if(viewerIsAdmin)$('admin-footer').innerHTML='<a href="admin.html">Administrar catálogo</a>';
-const mobileNames={home:['home','Início'],search:['search','Buscar'],list:['list','Minha lista']};
+const mobileNames={home:['home','Início'],search:['search','Buscar'],list:['list','Minha lista'],me:['heart','Minha Streamlab']};
 document.querySelectorAll('[data-mobile]').forEach(a=>{const [i,label]=mobileNames[a.dataset.mobile];a.innerHTML=icon(i)+`<span>${label}</span>`;});
 renderMain();
 
