@@ -25,3 +25,7 @@ Escopo autorizado: itens recomendados 1, 2, 3, 5, 6, 10, 12 e 18, acrescidos de 
 ## Limites
 
 Verificação por Chromium com tamanhos de viewport, não em iPhone físico. Reprodução de um vídeo real do proprietário no Google Drive e envio de confirmação de cadastro continuam pendentes de vídeo e SMTP, respectivamente. Nenhuma migração do Supabase foi necessária nesta revisão.
+
+## Verificação após publicar
+
+GitHub Pages concluiu a publicação do commit de distribuição 8e7022df915e3726e9eff302f437512534147373. `tests/site-smoke.mjs` passou no endereço público: catálogo e Entrar visíveis em 375/768/1440px; abertura de detalhes sem botões interceptando o toque; ausência da opção de arquivo do aparelho; MP4 reproduziu, avançou e pausou; título/controles/créditos separados; busca móvel funcionou.
