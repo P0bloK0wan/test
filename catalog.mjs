@@ -1,3 +1,4 @@
+import {normalizeEpisodeMetadata} from './episodes.mjs';
 import {myVideos} from './my-videos.mjs';
 
 // Original catalogue text. Film artwork/films credited to Blender Studio/Foundation.
@@ -36,7 +37,7 @@ const baseCatalog=Object.freeze([...openMovies,...ownMovies]);
 export let catalog=baseCatalog;
 export function replaceCloudMovies(rows){
  const baseIds=new Set(baseCatalog.map(m=>m.id));
- const movies=rows.filter(m=>typeof m.id==='string'&&/^[-a-z0-9]+$/.test(m.id)&&!baseIds.has(m.id)&&mediaPath(m.video)).map(m=>Object.freeze({...m,genres:Object.freeze(Array.isArray(m.genres)?m.genres.map(String):['Meus vídeos']),hero:mediaPath(m.image)||'assets/own-video.svg',image:mediaPath(m.image)||'assets/own-video.svg',video:mediaPath(m.video),trailer:null,tagline:'Uma nova história no catálogo.',credit:String(m.credit||'Produção própria')}));
+ const movies=rows.filter(m=>typeof m.id==='string'&&/^[-a-z0-9]+$/.test(m.id)&&!baseIds.has(m.id)&&mediaPath(m.video)).map(m=>Object.freeze({...m,...normalizeEpisodeMetadata(m),genres:Object.freeze(Array.isArray(m.genres)?m.genres.map(String):['Meus vídeos']),hero:mediaPath(m.image)||'assets/own-video.svg',image:mediaPath(m.image)||'assets/own-video.svg',video:mediaPath(m.video),trailer:null,tagline:'Uma nova história no catálogo.',credit:String(m.credit||'Produção própria')}));
  catalog=Object.freeze([...baseCatalog,...movies]);
  genres=Object.freeze([...new Set(catalog.flatMap(m=>m.genres))]);
  return movies;

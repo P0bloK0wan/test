@@ -1,7 +1,7 @@
 import {requireViewer} from './access.mjs';
 try{
  if(await requireViewer()){
-  await import('./app.mjs?v=polish-1');
+  await import('./app.mjs?v=episodes-1');
   document.body.removeAttribute('data-auth-pending');
  }
 }catch{
