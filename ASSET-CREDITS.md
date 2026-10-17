@@ -26,3 +26,10 @@ Artes mantidas sem edição de arquivo; o site apenas aplica recorte de apresent
 Licenças: https://creativecommons.org/licenses/by/4.0/ e https://creativecommons.org/licenses/by/3.0/. Trailers © Blender Foundation; Sintel: https://durian.blender.org/; Big Buck Bunny: https://peach.blender.org/. Fontes e SHA-256 detalhados em docs/asset-provenance.json.
 
 Os links de incorporação dos filmes completos foram obtidos nas páginas oficiais de cada filme no Blender Studio. O texto Netflix é uma referência ao aplicativo estudado; este projeto é independente e não possui conexão com o serviço. Marcas de terceiros não estão cobertas pela licença do código.
+
+
+## TMDB
+
+Logo oficial obtido pelo endereço de asset referenciado no FAQ oficial https://developer.themoviedb.org/docs/faq : https://files.readme.io/29c6fee-blue_short.svg . Uso apenas para atribuir a integração da API, seguindo https://www.themoviedb.org/about/logos-attribution . A marca não está coberta pela licença MIT do código.
+
+SHA-256 de `dist/assets/tmdb.svg`: 4698ff4b3cf7244ae04c08866c59bf86602cbe21bffe7ac72a4ddfe44552fcb9

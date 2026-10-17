@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#141414"><meta name="robots" content="noindex"><title>Administração — Cinema</title>
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="admin.css">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="admin.css"><link rel="stylesheet" href="metadata-panel.css">
 </head>
 <body>
 <header><a class="brand" href="./">CINEMA <span>ESTÚDIO</span></a><a href="./">← Voltar ao catálogo</a></header>
@@ -22,6 +22,7 @@
 <section id="denied" class="panel" hidden><h2>Conta sem permissão de administrador</h2><p>Seu login foi reconhecido, mas este e-mail ainda não está autorizado a gerenciar o catálogo. O responsável pelo projeto precisa autorizar a conta no servidor.</p><button data-signout>Sair desta conta</button></section>
 <div id="workspace" hidden>
 <div class="session-bar"><span>Sessão de administrador verificada</span><div class="actions"><button id="change-password" type="button">Alterar minha senha</button><button data-signout>Sair</button></div></div>
+<section class="panel" id="metadata-panel" aria-label="Buscar informações de filmes"></section>
 <section class="panel"><div class="section-heading"><div><p class="eyebrow">Primeiro, um rascunho</p><h2>Adicionar vídeo</h2></div><span class="badge">Privado até publicar</span></div>
 <form id="video-form">
 <div class="grid two">

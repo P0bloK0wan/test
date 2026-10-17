@@ -9,11 +9,12 @@
   },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs tests/drive-link.test.mjs",
+    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs tests/drive-link.test.mjs tests/metadata-handler.test.mjs",
     "test:browser": "node tests/browser.mjs",
     "build": "node scripts/build-cloud.mjs",
     "test:admin": "node tests/admin-browser.mjs",
-    "test:security": "node --use-env-proxy --test tests/schema.test.mjs"
+    "test:security": "node --use-env-proxy --test tests/schema.test.mjs",
+    "test:metadata": "node tests/metadata-browser.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

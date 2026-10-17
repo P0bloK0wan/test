@@ -1,5 +1,9 @@
 # Netflix Web — implementação independente
 
+**[ABRIR O SITE](https://cinema-netflix-rea.woodsy-sloth-2178.chatgpt.site)** · **[PAINEL DE ADMINISTRAÇÃO](https://cinema-netflix-rea.woodsy-sloth-2178.chatgpt.site/admin.html)**
+
+A aba `main` do GitHub exibe os arquivos do projeto. Use os links acima para abrir a aplicação funcionando. A hospedagem permanece privada: entre com a conta ChatGPT autorizada; depois use seu login administrativo no painel.
+
 Site responsivo funcional, baseado em investigação estática do APK fornecido e em código original. Catálogo com 11 filmes abertos; não utiliza servidores, contas ou conteúdo privado da Netflix.
 
 ## Publicar por link do Google Drive
@@ -52,7 +56,7 @@ Scripts de browser / HTTP precisam poder lançar processos e abrir loopback. O s
 - docs/analysis.md: análise, requisitos, evidências e limitações.
 - docs/browser-results.json: 18 verificações reais de navegador aprovadas.
 - docs/desktop.png e docs/mobile.png: capturas reais.
-- docs/node-tests.log: 9 testes aprovados.
+- docs/node-tests.log: 19 testes aprovados.
 
 Não inclui o APK original nem código decompilado dele. Mantém assets abertos e atribuições. Publicação autorizada pelo usuário. A identidade de hospedagem está em .openai/hosting.json; o relatório de publicação fica em docs/publication.json.
 
@@ -82,3 +86,12 @@ npm run test:admin
 ```
 
 `test:admin` usa backend simulado para verificar a interface. `test:security` exige sessões temporárias reais em variáveis de ambiente; sem elas, registra skip. `tests/cloud-browser.mjs` recebe credenciais de contas temporárias por stdin e testa login, upload e atualização de outro navegador contra Supabase real. Nunca grave essas credenciais em arquivos ou Git.
+
+
+## Buscar título, descrição e classificação
+
+O painel possui **Informações do filme**: digite o título, busque, selecione o filme correto e use **Aplicar ao formulário**. A integração preenche título, sinopse, ano, duração, gêneros, direção e classificação brasileira quando disponíveis. Campos ausentes exigem revisão manual; não se convertem classificações de outros países em brasileiras.
+
+É necessário obter sua própria chave gratuita para uso não comercial em https://www.themoviedb.org/settings/api e cadastrá-la em **Configurar chave do TMDB** no painel. Nunca envie a chave no chat ou no GitHub. O segredo fica no backend protegido. O código já está integrado e a função Supabase `movie-metadata` está publicada, mas consultas reais ao TMDB dependem dessa credencial.
+
+Leia [como configurar e usar](docs/METADADOS.md) e [a documentação técnica](docs/TMDB.md). Os testes da busca usam respostas controladas, pois nenhuma chave real do TMDB foi fornecida. A verificação real do backend cobre autenticação, segredo inacessível, integração sem chave e erros de configuração.

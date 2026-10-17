@@ -1,8 +1,10 @@
 import { cloud } from './cloud-client.mjs';
 import { parseGoogleDriveLink } from './drive-link.mjs';
+import { initMetadataPanel } from './metadata-panel.mjs';
 
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+let metadataCleanup=null;
 let authMode = 'login';
 let busy = false;
 let authorized = false;
@@ -29,8 +31,8 @@ function errorMessage(error) {
 function check(result) { if (result?.error) throw result.error; return result?.data; }
 function setBusy(value) {
   busy = value;
-  for (const button of document.querySelectorAll('button')) button.disabled = value && button.id !== 'cancel-upload';
-  for (const field of document.querySelectorAll('input,select,textarea')) field.disabled = value;
+  for (const button of document.querySelectorAll('button:not(#metadata-panel button)')) button.disabled = value && button.id !== 'cancel-upload';
+  for (const field of document.querySelectorAll('input:not(#metadata-panel input),select:not(#metadata-panel select),textarea:not(#metadata-panel textarea)')) field.disabled = value;
   updateVideoSource();
   $('auth-form').setAttribute('aria-busy', String(value));
   $('video-form').setAttribute('aria-busy', String(value));
@@ -74,9 +76,10 @@ async function refreshAccess() {
     $('auth').hidden = Boolean(user) && authMode !== 'recovery';
     $('denied').hidden = !user || authorized || authMode === 'recovery';
     $('workspace').hidden = !authorized || authMode === 'recovery';
-    if (authorized && authMode !== 'recovery') await refreshVideos();
+    if (authorized && authMode !== 'recovery') {if(!metadataCleanup&&typeof cloud.metadata==='function')metadataCleanup=initMetadataPanel({cloud,root:$('metadata-panel')});await refreshVideos();}
+    else if(!authorized&&metadataCleanup){metadataCleanup.destroy();metadataCleanup=null;}
   } catch (error) {
-    authorized = false;
+    authorized = false;if(metadataCleanup){metadataCleanup.destroy();metadataCleanup=null;}
     $('workspace').hidden = true;
     $('auth').hidden = false;
     message(errorMessage(error), true);
@@ -157,6 +160,7 @@ $('video-form').addEventListener('submit', async event => {
     kind:String(values.get('kind')), director:String(values.get('director')).trim(), credit:String(values.get('credit')).trim(), status:'draft',
     video_source:drive ? 'drive' : 'upload', drive_url:normalizedDrive?.shareUrl || null, video_path:null
   };
+  if (!values.get('age')) return message('Selecione a classificação indicativa antes de salvar.', true);
   if (!payload.title || !payload.synopsis || !payload.credit) return message('Preencha título, descrição e créditos.', true);
   controller = new AbortController();
   const signal = controller.signal;

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "Anonymous function access denied",
+    "Real test administrator can check unconfigured provider",
+    "Administrator cannot read provider secret RPC",
+    "Missing TMDB key produces actionable configuration error",
+    "Invalid provider credential rejected without disclosure"
+  ],
+  "limits": [
+    "No owner TMDB key: actual TMDB search, movie details and provider validation not exercised live."
+  ]
+}

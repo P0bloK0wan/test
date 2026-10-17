@@ -1,17 +1,27 @@
-✔ Drive sharing variants normalize to an exact preview origin and preserve resource keys (1.83995ms)
-✔ Drive parser rejects folders, credentials, scripts, hostile origins and ambiguous identifiers (0.724895ms)
-✔ library persists all profile-specific actions and active profile across reloads (2.37295ms)
-✔ validates before mutation and enforces profile limits and safe deletion (0.624649ms)
-✔ copies cannot mutate state and arbitrary IDs cannot pollute prototypes (0.292439ms)
-✔ progress clamps, orders by recency and removes completed movies (0.34356ms)
-✔ invalid persistence is sanitized and storage failures preserve usable memory (0.607337ms)
-✔ query combines accent-insensitive fields, genre, kind, saved and kids restrictions (1.835882ms)
-✔ static site serves its root, modules, byte ranges and rejects outside paths (63.92389ms)
-ℹ tests 9
+✔ Drive sharing variants normalize to an exact preview origin and preserve resource keys (2.184845ms)
+✔ Drive parser rejects folders, credentials, scripts, hostile origins and ambiguous identifiers (0.831251ms)
+✔ library persists all profile-specific actions and active profile across reloads (3.071531ms)
+✔ validates before mutation and enforces profile limits and safe deletion (0.784593ms)
+✔ copies cannot mutate state and arbitrary IDs cannot pollute prototypes (0.277267ms)
+✔ progress clamps, orders by recency and removes completed movies (0.396892ms)
+✔ invalid persistence is sanitized and storage failures preserve usable memory (0.719469ms)
+✔ query combines accent-insensitive fields, genre, kind, saved and kids restrictions (1.011145ms)
+✔ metadata rejects anonymous requests before any database/provider call (5.338754ms)
+✔ metadata validates JWT and administrator before reading secret (4.0623ms)
+✔ status only returns configured flag and refuses unconfigured search (3.261135ms)
+✔ search fixes provider URL, Portuguese params and output shape; caps results (2.721429ms)
+✔ details maps metadata and keeps missing Brazilian rating unknown (1.542256ms)
+✔ Brazilian rating uses release priority, accepts Livre and rejects unknown/US (0.283135ms)
+✔ configure validates provider before saving, supports API key and deletion (3.964608ms)
+✔ invalid ids, query and token are rejected before privileged secret/upstream (3.214358ms)
+✔ provider rate limits and transport errors are sanitized without secret leaks (1.992311ms)
+✔ CORS allows site and local preview only, never bypasses JWT (1.265008ms)
+✔ static site serves its root, modules, byte ranges and rejects outside paths (63.300277ms)
+ℹ tests 19
 ℹ suites 0
-ℹ pass 9
+ℹ pass 19
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 114.519218
+ℹ duration_ms 150.91978

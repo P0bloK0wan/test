@@ -59,9 +59,18 @@ async function publishedMovies(){
   return {...row,drive,video,image:await signedUrl(row.image_path)||'assets/own-video.svg',source:video};
  }));
 }
+async function metadata(action,payload={}){
+ const {data,error}=await requireClient().functions.invoke('movie-metadata',{body:{...payload,action}});
+ if(error){
+  let reason;
+  try{const response=error.context;if(response?.clone)reason=(await response.clone().json()).error;}catch{}
+  throw new Error(reason||'Não foi possível acessar a busca de filmes. Confira a conexão e tente novamente.');
+ }
+ if(data?.error)throw new Error(data.error);return data;
+}
 function subscribe(onChange){
  if(!client)return ()=>{};
  const channel=client.channel('cinema-publications').on('postgres_changes',{event:'*',schema:'public',table:'cinema_videos'},onChange).subscribe();
  return ()=>{void client.removeChannel(channel);};
 }
-export const cloud={ready,client,maxVideoBytes,uploadVideo,uploadCover,listAdminVideos,saveVideo,setPublished,deleteVideo,isAdmin,publishedMovies,subscribe};
+export const cloud={ready,client,maxVideoBytes,uploadVideo,uploadCover,listAdminVideos,saveVideo,setPublished,deleteVideo,isAdmin,publishedMovies,subscribe,metadata};

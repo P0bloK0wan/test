@@ -1,9 +1,10 @@
 {
   "passed": true,
   "mode": "LIVE_SUPABASE_WITH_FICTIONAL_DRIVE_ID",
-  "checkedAt": "2026-10-17T13:16:24.851Z",
+  "checkedAt": "2026-10-17T13:31:27.406Z",
   "checks": [
     "Real existing test administrator login",
+    "Live metadata backend reports missing owner key in the actual admin panel",
     "Live database rejects missing, foreign and folder Drive links",
     "Drive link creates a real private draft with no video upload",
     "Published Drive entry reaches an already open anonymous catalogue",

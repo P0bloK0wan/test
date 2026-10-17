@@ -26,6 +26,7 @@ try{
  const admin=await newPage(),viewer=await newPage();admin.on('dialog',d=>d.accept());
  stage='login';await admin.goto(base+'/admin.html');await admin.locator('#email').fill(login.email);await admin.locator('#password').fill(login.password);await admin.locator('#auth-submit').click();await admin.locator('#workspace').waitFor({state:'visible',timeout:20000});
  checks.push('Real existing test administrator login');
+ await admin.getByText('Configure sua chave TMDB para buscar informações.',{exact:true}).waitFor({timeout:20000});checks.push('Live metadata backend reports missing owner key in the actual admin panel');
  stage='constraints';const constraints=await admin.evaluate(async()=>{
   const {cloud}=await import('./cloud-client.mjs');
   const results=[];

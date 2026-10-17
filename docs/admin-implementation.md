@@ -13,3 +13,6 @@ Confirmação de e-mail está habilitada (mailer_autoconfirm=false). Entrega de 
 Limites: vídeo50MiB, capa5MiB, sem transcodificação; cotas gratuitas de armazenamento e tráfego do provedor. Uploads interrompidos podem deixar objetos privados órfãos para limpeza no Storage. Links assinados já emitidos podem valer até a expiração mesmo após retirar do catálogo. Advisors: somente aviso informativo RLS sem políticas na tabela de administradores, intencional para negar acesso direto.
 
 Correção da revisão: publicação retirada durante reprodução não pode interromper cleanup por falha ao salvar progresso. Teste real cobre a sequência.
+
+
+Atualizações posteriores: links públicos do Drive e busca TMDB opcional, documentados em drive-implementation.md e TMDB.md. O envio por Drive e o preenchimento de metadados não substituem a revisão do administrador. Contagens atuais estão nos relatórios JSON de cada suíte.
