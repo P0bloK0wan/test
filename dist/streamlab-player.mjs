@@ -13,6 +13,7 @@ export function mountStreamlabPlayer(video, {title = 'Vídeo', onError = () => {
  const play = find('[data-sl="play"]'), mute = find('[data-sl="mute"]'), seek = find('.sl-seek'), volume = find('.sl-volume'), speed = find('select'), time = find('.sl-time'), status = find('.sl-status');
  const fullscreen = find('[data-sl="fullscreen"]'), pip = find('[data-sl="pip"]');
  let disposed = false, failed = false;
+ const toggleMute=()=>{if(video.muted||video.volume===0){if(video.volume===0)video.volume=.5;video.muted=false;}else video.muted=true;};
  const listen = (target, type, fn) => target.addEventListener(type, fn, {signal});
  const format = seconds => {const n = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;return `${n >= 3600 ? `${Math.floor(n / 3600)}:` : ''}${n >= 3600 ? String(Math.floor(n / 60) % 60).padStart(2, '0') : Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;};
  const sync = () => {
@@ -21,8 +22,8 @@ export function mountStreamlabPlayer(video, {title = 'Vídeo', onError = () => {
   seek.setAttribute('aria-valuetext', `${format(video.currentTime)} de ${format(duration)}`);
   time.textContent = `${format(video.currentTime)} / ${format(duration)}`;
   play.textContent = video.paused ? '▶' : 'Ⅱ'; play.setAttribute('aria-label', video.paused ? 'Reproduzir' : 'Pausar');
-  mute.textContent = video.muted || !video.volume ? 'Mudo' : 'Som'; mute.setAttribute('aria-label', video.muted ? 'Ativar som' : 'Silenciar');
-  mute.setAttribute('aria-pressed', String(video.muted)); volume.value = String(video.muted ? 0 : video.volume); speed.value = String(video.playbackRate);
+  mute.textContent = video.muted || !video.volume ? 'Mudo' : 'Som'; mute.setAttribute('aria-label', video.muted || !video.volume ? 'Ativar som' : 'Silenciar');
+  mute.setAttribute('aria-pressed', String(video.muted || !video.volume)); volume.value = String(video.muted ? 0 : video.volume); speed.value = String(video.playbackRate);
  };
  const toggle = async () => {status.textContent = '';if (video.paused) {try {await video.play();} catch {if (!disposed) status.textContent = 'Toque em reproduzir para tentar novamente.';}} else video.pause();};
  const jump = offset => {if (Number.isFinite(video.duration)) video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + offset));};
@@ -31,7 +32,7 @@ export function mountStreamlabPlayer(video, {title = 'Vídeo', onError = () => {
   if (action === 'play') await toggle();
   if (action === 'back') jump(-10);
   if (action === 'forward') jump(10);
-  if (action === 'mute') video.muted = !video.muted;
+  if (action === 'mute') toggleMute();
   if (action === 'fullscreen') {try {if(document.fullscreenElement === shell) await document.exitFullscreen();else if(shell.requestFullscreen) await shell.requestFullscreen();else video.webkitEnterFullscreen();} catch {status.textContent = 'Tela cheia não está disponível neste navegador.';}}
   if (action === 'pip') {try {if(document.pictureInPictureElement === video) await document.exitPictureInPicture();else await video.requestPictureInPicture();} catch {status.textContent = 'Janela flutuante indisponível para este vídeo.';}}
  });
@@ -45,7 +46,7 @@ export function mountStreamlabPlayer(video, {title = 'Vídeo', onError = () => {
   if (event.key === ' ' || event.key === 'k') void toggle();
   if (event.key === 'ArrowLeft') jump(-10);
   if (event.key === 'ArrowRight') jump(10);
-  if (event.key === 'm') video.muted = !video.muted;
+  if (event.key === 'm') toggleMute();
  });
  for (const event of ['loadedmetadata', 'durationchange', 'timeupdate', 'play', 'pause', 'ended', 'volumechange', 'ratechange']) listen(video, event, sync);
  listen(document, 'fullscreenchange', () => {fullscreen.setAttribute('aria-label', document.fullscreenElement === shell ? 'Sair da tela cheia' : 'Tela cheia');});
