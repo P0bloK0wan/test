@@ -1,0 +1,60 @@
+/* Progressive enhancement: content has no hidden/pending state. */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-enabled .view-content { animation: none; }
+
+  .motion-enabled .motion-hero > * {
+    animation: cinema-enter 280ms cubic-bezier(.2,.7,.25,1) backwards;
+  }
+  .motion-enabled .motion-hero > :nth-child(2) { animation-delay: 25ms; }
+  .motion-enabled .motion-hero > :nth-child(3) { animation-delay: 50ms; }
+  .motion-enabled .motion-hero > :nth-child(4) { animation-delay: 75ms; }
+  .motion-enabled .motion-hero > :nth-child(5) { animation-delay: 100ms; }
+
+  .motion-enabled .motion-reveal {
+    animation: cinema-enter 360ms cubic-bezier(.2,.7,.25,1) backwards;
+  }
+  .motion-enabled .motion-hero:focus-within > *,
+  .motion-enabled .motion-reveal:focus-within { animation: none; }
+
+  .motion-enabled .card-visual { transition: transform 200ms cubic-bezier(.2,.7,.25,1); }
+  .motion-enabled .card-open img { transition: transform 260ms cubic-bezier(.2,.7,.25,1); }
+  .motion-enabled .movie-card:focus-within .card-visual { transform: translateY(-2px); }
+  .motion-enabled .movie-card:focus-within .card-open img { transform: scale(1.025); }
+  .motion-enabled .movie-card:active .card-visual { transform: translateY(0); }
+
+  .motion-enabled dialog[open] {
+    animation: cinema-dialog-enter 220ms cubic-bezier(.2,.7,.25,1);
+  }
+  .motion-enabled dialog[open]::backdrop { animation: cinema-backdrop-enter 180ms ease-out; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .motion-enabled .movie-card:hover .card-visual { transform: translateY(-2px); }
+    .motion-enabled .movie-card:hover .card-open img { transform: scale(1.025); }
+    .motion-enabled .movie-card:active .card-visual { transform: translateY(0); }
+  }
+}
+
+@keyframes cinema-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cinema-dialog-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cinema-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Also neutralize the original stylesheet's static hover zoom. */
+  .movie-card:hover .card-open img,
+  .movie-card:focus-within .card-open img,
+  .movie-card:hover .card-visual,
+  .movie-card:focus-within .card-visual { transform: none !important; }
+  .motion-hero > *, .motion-reveal, dialog[open], dialog[open]::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+}
