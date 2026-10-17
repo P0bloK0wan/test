@@ -73,7 +73,7 @@ try {
   });
   await check('Playback preferences persist through a reload', async()=>{
     await page.locator('.footer [data-action="preferences"]').click(); await page.locator('#pref-autoplay').uncheck(); await page.locator('#pref-muted').check();
-    await page.getByRole('button',{name:'Salvar preferências',exact:true}).click(); await page.reload();
+    await page.getByRole('button',{name:'Salvar preferências',exact:true}).click(); await page.reload(); await page.getByRole('button',{name:'Detalhes de Sintel',exact:true}).waitFor();
     await page.locator('.footer [data-action="preferences"]').click(); assert.equal(await page.locator('#pref-autoplay').isChecked(),false); assert.equal(await page.locator('#pref-muted').isChecked(),true); await close();
   });
   await check('Child profile filtering, read notices, editing and deletion work',async()=>{

@@ -16,6 +16,16 @@ let rows = [];
 let pendingFiles = {videoFile:null,coverFile:null,video:null,cover:null};
 const maxVideoBytes = cloud.maxVideoBytes || 50 * 1024 * 1024;
 
+function updateEpisodeFields() {
+  const form=$('video-form');
+  const active=['series_title','season','episode','episode_title'].some(name=>String(form.elements.namedItem(name).value).trim());
+  for(const name of ['series_title','season','episode'])form.elements.namedItem(name).required=active;
+}
+for(const name of ['series_title','season','episode','episode_title'])$('video-form').elements.namedItem(name).addEventListener('input',updateEpisodeFields);
+$('video-form').addEventListener('reset',()=>setTimeout(updateEpisodeFields,0));
+$('video-form').addEventListener('invalid',event=>{const details=event.target.closest('#episode-fields');if(details)details.open=true;},true);
+updateEpisodeFields();
+
 function message(text, error = false) {
   $('message').textContent = text;
   $('message').classList.toggle('error', error);
@@ -163,6 +173,11 @@ $('video-form').addEventListener('submit', async event => {
     kind:String(values.get('kind')), director:String(values.get('director')).trim(), credit:String(values.get('credit')).trim(), status:'draft',
     video_source:drive ? 'drive' : 'upload', drive_url:normalizedDrive?.shareUrl || null, video_path:null
   };
+  const seriesTitle=String(values.get('series_title')||'').trim(),episodeTitle=String(values.get('episode_title')||'').trim();
+  const seasonRaw=String(values.get('season')||'').trim(),episodeRaw=String(values.get('episode')||'').trim();
+  const episodic=Boolean(seriesTitle||episodeTitle||seasonRaw||episodeRaw);
+  if(episodic&&(!seriesTitle||!seasonRaw||!episodeRaw||![Number(seasonRaw),Number(episodeRaw)].every(value=>Number.isSafeInteger(value)&&value>0&&value<=2147483647))){$('episode-fields').open=true;return message('Para cadastrar um episódio, informe o nome da série, a temporada e o número do episódio com inteiros positivos.',true);}
+  Object.assign(payload,{series_title:episodic?seriesTitle:null,season:episodic?Number(seasonRaw):null,episode:episodic?Number(episodeRaw):null,episode_title:episodic?episodeTitle||null:null});
   if (!values.get('age')) return message('Selecione a classificação indicativa antes de salvar.', true);
   if (!payload.title || !payload.synopsis || !payload.credit) return message('Preencha título, descrição e créditos.', true);
   controller = new AbortController();

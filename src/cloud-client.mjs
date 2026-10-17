@@ -39,7 +39,7 @@ async function uploadCover(file){
 }
 async function listAdminVideos(){const {data,error}=await requireClient().from('cinema_videos').select('*').order('created_at',{ascending:false});fail(error);return data;}
 async function saveVideo(payload){
- const allowed=['id','title','synopsis','age','minutes','year','genres','kind','director','credit','video_path','image_path','status','video_source','drive_url'];
+ const allowed=['id','title','synopsis','age','minutes','year','genres','kind','director','credit','video_path','image_path','status','video_source','drive_url','series_title','season','episode','episode_title'];
  const row=Object.fromEntries(Object.entries(payload).filter(([key])=>allowed.includes(key)));
  const query=row.id?requireClient().from('cinema_videos').update(row).eq('id',row.id):requireClient().from('cinema_videos').insert(row);
  const {data,error}=await query.select().single();fail(error);return data;
