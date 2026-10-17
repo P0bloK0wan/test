@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "mode": "LIVE_SUPABASE",
+  "checkedAt": "2026-10-17T12:45:28.453Z",
+  "checks": [
+    "Real email/password admin login and server permission",
+    "Real TUS upload stored as private draft without a cover",
+    "Publishing reaches an already open anonymous viewer through polling",
+    "Signed private-storage MP4 actually plays in the viewer",
+    "Unpublishing during playback does not break cleanup",
+    "Administrator deletes temporary title and storage media",
+    "Ordinary verified account cannot open administration"
+  ],
+  "limits": [
+    "QA browser fetched Supabase HTTPS through the session proxy with TLS verification; realtime WebSockets disabled to exercise polling fallback.",
+    "Temporary operator-created QA identities; user email delivery and recovery delivery not exercised."
+  ]
+}

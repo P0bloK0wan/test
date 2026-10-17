@@ -1,7 +1,8 @@
-import {catalog, genres, findMovie} from './catalog.mjs';
+import {catalog, genres, findMovie, replaceCloudMovies} from './catalog.mjs';
 import {createLibrary} from './library.mjs';
 import {filterCatalog} from './catalog-query.mjs';
 import {initMotion} from './motion.mjs';
+import {cloud} from './cloud-client.mjs';
 
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -22,11 +23,11 @@ const paths = {
 };
 const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.info}</svg>`;
 let storage; try {storage=window.localStorage;} catch {}
-const library=createLibrary(storage,{catalogIds:catalog.map(m=>m.id)});
+const library=createLibrary(storage);
 const dialog=$('dialog');
 let cleanupMotion=()=>{};
 let currentPanel=null, toastTimer, railCounter=0, dialogOpener=null, playerCleanup=null;
-const noticeMovies = () => ['wing-it','charge','sprite-fright'].map(findMovie).filter(m=>!library.activeProfile().kids||m.age<=10);
+const noticeMovies = () => [...catalog.filter(m=>m.publishedOnline),...['wing-it','charge','sprite-fright'].map(findMovie)].filter(m=>m&&(!library.activeProfile().kids||m.age<=10));
 const age = value => `<span class="age age--${value}">${value===0?'L':value}</span>`;
 const getRoute=()=>{const raw=location.hash.slice(1)||'/home';const [path,qs]=raw.split('?');return {view:path.replace(/^\//,'')||'home',params:new URLSearchParams(qs||'')};};
 function route(view,params={},replace=false){
@@ -65,7 +66,7 @@ function renderMain(){
  if(!validViews.includes(view)){route('home',{},true);return;}
  if(view==='home'&&!genre){
   const movie=findMovie('sintel');const progressIds=library.continueWatching();const progress=progressIds.map(findMovie).filter(m=>m&&available.includes(m));
-  $('main').innerHTML=`<div class="view-content"><section class="hero" aria-label="Destaque: Sintel"><img class="hero-image" src="${movie.hero}" alt="Sintel em uma paisagem montanhosa" fetchpriority="high"><div class="hero-copy"><div class="hero-label"><span aria-hidden="true">N</span> CINEMA ABERTO</div><h1>SINTEL</h1><p class="hero-tagline">Uma jornada. Uma amizade. Um destino.</p><p class="hero-synopsis">Em busca de um pequeno dragão, uma jovem descobre que algumas histórias ficam com a gente para sempre.</p><div class="hero-buttons"><button class="button" data-action="trailer" data-id="sintel" data-focus="hero-play">${icon('play')}Assistir trailer</button><button class="button button--secondary" data-action="details" data-id="sintel" data-focus="hero-details">${icon('info')}Mais informações</button></div></div><div class="hero-edge"><div class="hero-age">${age(10)}<span>Fantasia · 15 min</span></div></div></section><div class="content-rows">${shelf('Continue de onde parou',progress,{progress:true})}${shelf('Sua próxima história favorita',available.slice(0,8))}${shelf('10 histórias para a sua lista',available.slice(0,10),{rank:true})}<div class="feature-band"><div><h2>Grandes histórias. Novas descobertas.</h2><p>Uma seleção de cinema independente para sair do óbvio.</p></div><a href="#/films">Explorar catálogo${icon('right')}</a></div>${shelf('Imaginação sem limites',available.filter(m=>m.genres.includes('Fantasia')||m.genres.includes('Ficção científica')))}${shelf('Para deixar o dia mais leve',available.filter(m=>m.genres.includes('Comédia')))}</div></div>`;
+  $('main').innerHTML=`<div class="view-content"><section class="hero" aria-label="Destaque: Sintel"><img class="hero-image" src="${movie.hero}" alt="Sintel em uma paisagem montanhosa" fetchpriority="high"><div class="hero-copy"><div class="hero-label"><span aria-hidden="true">N</span> CINEMA ABERTO</div><h1>SINTEL</h1><p class="hero-tagline">Uma jornada. Uma amizade. Um destino.</p><p class="hero-synopsis">Em busca de um pequeno dragão, uma jovem descobre que algumas histórias ficam com a gente para sempre.</p><div class="hero-buttons"><button class="button" data-action="trailer" data-id="sintel" data-focus="hero-play">${icon('play')}Assistir trailer</button><button class="button button--secondary" data-action="details" data-id="sintel" data-focus="hero-details">${icon('info')}Mais informações</button></div></div><div class="hero-edge"><div class="hero-age">${age(10)}<span>Fantasia · 15 min</span></div></div></section><div class="content-rows">${shelf('Continue de onde parou',progress,{progress:true})}${shelf('Acabaram de chegar',available.filter(m=>m.publishedOnline))}${shelf('Sua próxima história favorita',available.slice(0,8))}${shelf('10 histórias para a sua lista',available.slice(0,10),{rank:true})}<div class="feature-band"><div><h2>Grandes histórias. Novas descobertas.</h2><p>Uma seleção de cinema independente para sair do óbvio.</p></div><a href="#/films">Explorar catálogo${icon('right')}</a></div>${shelf('Imaginação sem limites',available.filter(m=>m.genres.includes('Fantasia')||m.genres.includes('Ficção científica')))}${shelf('Para deixar o dia mais leve',available.filter(m=>m.genres.includes('Comédia')))}</div></div>`;
  }else{
   let items=filterCatalog(catalog,{query:view==='search'?query:'',genre,kind:view==='animation'?'animation':'all',savedIds:view==='list'?library.savedIds():null,kids:profile.kids});
   if(view==='new')items=[...items].sort((a,b)=>b.year-a.year);
@@ -82,7 +83,7 @@ function openPanel(kind){
  if(currentPanel===kind){closePanel();return;}
  currentPanel=kind;const active=library.activeProfile();
  if(kind==='profiles'){
-  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}<button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
+  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}<a class="panel-link" href="admin.html">${icon('settings')}Painel do administrador</a><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
   $('profile-toggle').setAttribute('aria-expanded','true');$('notices-toggle').setAttribute('aria-expanded','false');
  }else{
   const items=noticeMovies();
@@ -129,7 +130,7 @@ function openPlayer(m,{trailer=false,resume=false,temporary=false,onClose=()=>{}
  openDialog(`<div class="player-topbar">${closeButton('Fechar reprodução')}<h1 id="dialog-title">${esc(m.title)}<span>${subtitle}</span></h1></div><div class="player-stage">${stage}</div>${footer}<div class="video-error" id="video-error" hidden><strong>Não foi possível reproduzir agora.</strong>${error}</div>`,{player:true});
  if(native){
   const video=$('movie-video');const errorPanel=$('video-error');const controller=new AbortController();const signal=controller.signal;let lastSaved=0;
-  const save=()=>{if(!temporary&&Number.isFinite(video.duration)&&video.duration>0)library.recordProgress(m.id,video.currentTime,video.duration);};
+  const save=()=>{if(!temporary&&Number.isFinite(video.duration)&&video.duration>0&&findMovie(m.id)){try{library.recordProgress(m.id,video.currentTime,video.duration);}catch{/* Title may have been removed while playing. */}}};
   video.muted=pref.muted;
   video.addEventListener('loadedmetadata',()=>{const record=temporary?null:library.progress(m.id);if(resume&&record&&record.seconds<video.duration*.95)video.currentTime=record.seconds;if(pref.autoplay)video.play().catch(()=>{});},{once:true,signal});
   video.addEventListener('timeupdate',()=>{if(Date.now()-lastSaved>1000){save();lastSaved=Date.now();}},{signal});
@@ -205,3 +206,29 @@ window.addEventListener('scroll',()=>{const r=getRoute();$('header').classList.t
 const mobileNames={home:['home','Início'],search:['search','Buscar'],list:['list','Minha lista']};
 document.querySelectorAll('[data-mobile]').forEach(a=>{const [i,label]=mobileNames[a.dataset.mobile];a.innerHTML=icon(i)+`<span>${label}</span>`;});
 renderMain();
+
+let cloudFingerprint=null,cloudLoading=false;
+async function refreshCloudCatalog(){
+ if(!cloud.ready||cloudLoading)return;cloudLoading=true;
+ try{
+  const rows=await cloud.publishedMovies();
+  const fingerprint=JSON.stringify(rows.map(m=>[m.id,m.updated_at,m.video,m.image]));
+  if(fingerprint!==cloudFingerprint){
+   const first=cloudFingerprint===null;const previous=new Set(catalog.map(m=>m.id));
+   const movies=replaceCloudMovies(rows.map(m=>({...m,publishedOnline:true})));
+   library.setCatalogIds(catalog.map(m=>m.id));cloudFingerprint=fingerprint;
+   const focused=document.activeElement;const selection=focused?.id==='global-search'?[focused.selectionStart,focused.selectionEnd]:null;
+   if(!dialog.open)renderMain();else updateHeader();
+   if(selection){$('global-search').focus({preventScroll:true});$('global-search').setSelectionRange(...selection);}
+   const added=movies.filter(m=>!previous.has(m.id)&&(!library.activeProfile().kids||m.age<=10));
+   if(!first&&added.length)toast(`${added.length===1?'Novo vídeo disponível':'Novos vídeos disponíveis'}: ${added.map(m=>m.title).join(', ')}`);
+  }
+ }catch{ /* Preserve the last usable catalogue; the admin shows actionable errors. */ }finally{cloudLoading=false;}
+}
+if(cloud.ready){
+ void refreshCloudCatalog();
+ const stop=cloud.subscribe(()=>void refreshCloudCatalog());
+ const timer=setInterval(()=>{if(!document.hidden)void refreshCloudCatalog();},10000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshCloudCatalog();});
+ window.addEventListener('pagehide',()=>{clearInterval(timer);stop();},{once:true});
+}

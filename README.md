@@ -49,3 +49,26 @@ Não inclui o APK original nem código decompilado dele. Mantém assets abertos 
 ## Seus próprios vídeos
 
 Use “Abrir vídeo do aparelho” no menu do perfil ou no rodapé. O vídeo não é enviado ao servidor. Para cadastrar vídeos compartilhados no catálogo, siga [COMO-ADICIONAR-VIDEOS.md](COMO-ADICIONAR-VIDEOS.md). Não é necessário programar uma API.
+
+
+## Administração e Supabase
+
+Abra `admin.html` pelo link **Painel do administrador**. O backend é o projeto Supabase `cinema-rea` (`uekfarmkhpeuiyfgxxio`), região São Paulo. Apenas a URL e a chave publicável ficam em `dist/cloud-config.mjs`; senhas e chaves administrativas não fazem parte do código.
+
+O painel usa e-mail/senha, autorização no banco, uploads TUS, capa opcional, rascunhos e publicação explícita. Catálogo e avisos atualizam com Realtime ou consulta a cada 10 segundos enquanto a página está aberta. Não inclui notificações push com o site fechado.
+
+Leia [o guia do painel](docs/PAINEL-ADMIN.md) e [a configuração do backend](docs/BACKEND.md). Para habilitar o primeiro administrador é necessário autorizar o e-mail dele na lista do servidor, criar a conta e confirmar o e-mail. Uma conta de teste foi criada a pedido do proprietário; o acesso é entregue fora do repositório. Use Alterar minha senha no painel para trocá-la. Para contas reais, a configuração de SMTP e URLs de confirmação/recuperação deve ser feita no painel Supabase; a integração disponível nesta sessão não oferece edição dessas opções.
+
+O upload está limitado a **50 MiB por vídeo**, com **5 MiB por capa**. Filmes longos precisam de cotas/serviço adequados. O plano pago não foi contratado. Novos uploads ficam no Storage, não no GitHub.
+
+### Recompilar o cliente
+
+```sh
+npm ci --ignore-scripts
+npm run build
+npm test
+npm run test:browser
+npm run test:admin
+```
+
+`test:admin` usa backend simulado para verificar a interface. `test:security` exige sessões temporárias reais em variáveis de ambiente; sem elas, registra skip. `tests/cloud-browser.mjs` recebe credenciais de contas temporárias por stdin e testa login, upload e atualização de outro navegador contra Supabase real. Nunca grave essas credenciais em arquivos ou Git.

@@ -57,6 +57,7 @@ export function createLibrary(storage, {catalogIds = []} = {}) {
     return [...new Set(ids)];
   };
   return {
+    setCatalogIds(ids) { catalog.clear();for(const id of ids)if(validId(id))catalog.add(id); },
     snapshot: () => copy(state),
     activeProfile: () => publicProfile(active()),
     setActiveProfile(id) { const p = profileById(id); state.activeProfileId = p.id; persist(); return publicProfile(p); },

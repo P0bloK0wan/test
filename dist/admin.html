@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#141414"><meta name="robots" content="noindex"><title>Administração — Cinema</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<header><a class="brand" href="./">CINEMA <span>ESTÚDIO</span></a><a href="./">← Voltar ao catálogo</a></header>
+<main>
+<section class="intro"><p class="eyebrow">Seu catálogo, suas histórias</p><h1>Painel de administração</h1><p>Envie seus vídeos, prepare os detalhes e publique quando estiver tudo pronto.</p></section>
+<p id="message" class="message" role="status" aria-live="polite" hidden></p>
+<section id="setup" class="panel" hidden><h2>Configuração pendente</h2><p>O acesso seguro e o armazenamento online precisam ser conectados antes de usar o painel. Nenhuma senha ou vídeo será enviado enquanto essa configuração estiver pendente.</p><p>Consulte o guia <code>docs/PAINEL-ADMIN.md</code> no projeto.</p></section>
+<section id="auth" class="panel" hidden>
+<h2 id="auth-title">Entrar como administrador</h2><p id="auth-description">Use seu e-mail autorizado e sua senha. Ter uma conta não concede permissão para publicar.</p>
+<form id="auth-form">
+<label id="email-label">E-mail<input name="email" id="email" type="email" autocomplete="username" required maxlength="254"></label>
+<label id="password-label">Senha<input name="password" id="password" type="password" autocomplete="current-password" minlength="8" required></label>
+<button class="primary" id="auth-submit" type="submit">Entrar</button>
+</form>
+<div class="auth-links"><button type="button" data-mode="signup">Criar minha conta</button><button type="button" data-mode="reset">Esqueci minha senha</button><button type="button" data-mode="login">Voltar para entrar</button></div>
+</section>
+<section id="denied" class="panel" hidden><h2>Conta sem permissão de administrador</h2><p>Seu login foi reconhecido, mas este e-mail ainda não está autorizado a gerenciar o catálogo. O responsável pelo projeto precisa autorizar a conta no servidor.</p><button data-signout>Sair desta conta</button></section>
+<div id="workspace" hidden>
+<div class="session-bar"><span>Sessão de administrador verificada</span><div class="actions"><button id="change-password" type="button">Alterar minha senha</button><button data-signout>Sair</button></div></div>
+<section class="panel"><div class="section-heading"><div><p class="eyebrow">Primeiro, um rascunho</p><h2>Adicionar vídeo</h2></div><span class="badge">Privado até publicar</span></div>
+<form id="video-form">
+<div class="grid two">
+<label>Título<input name="title" required maxlength="160" placeholder="O nome da sua história"></label>
+<label>Direção / autoria<input name="director" maxlength="160" placeholder="Quem criou o vídeo"></label>
+</div>
+<label>Descrição<textarea name="synopsis" required maxlength="4000" rows="3" placeholder="O que o público vai encontrar?"></textarea></label>
+<div class="grid four">
+<label>Ano<input name="year" type="number" min="1888" max="2100" value="2026" required></label>
+<label>Duração (minutos)<input name="minutes" type="number" min="1" max="1440" step="1" required></label>
+<label>Classificação<select name="age"><option value="L">Livre</option><option>10</option><option>12</option><option>14</option><option>16</option><option>18</option></select></label>
+<label>Tipo<select name="kind"><option value="live-action">Filmagem</option><option value="animation">Animação</option></select></label>
+</div>
+<label>Gêneros, separados por vírgula<input name="genres" maxlength="300" placeholder="Drama, Aventura"></label>
+<label>Créditos / licença<input name="credit" required maxlength="1000" placeholder="Autoria e autorização para exibição"></label>
+<div class="grid two"><label class="file-box">Arquivo do vídeo<input name="video" id="video-file" type="file" accept="video/mp4,.mp4" required><small id="video-limit">MP4 · H.264 com áudio AAC recomendado</small></label><label class="file-box">Capa (opcional)<input name="cover" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><small>JPG, PNG ou WebP · até 5 MiB</small></label></div>
+<p class="hint">Os arquivos serão enviados ao armazenamento online. Você deve ter autorização para exibir o conteúdo. Ao salvar, o vídeo fica em rascunho; publique-o na lista abaixo para liberar ao público.</p>
+<div id="upload-state" hidden><label for="upload-progress">Envio do vídeo</label><progress id="upload-progress" max="100" value="0"></progress><span id="upload-label">Preparando…</span></div>
+<div class="actions"><button class="primary" id="save-button" type="submit">Enviar e salvar rascunho</button><button id="cancel-upload" type="button" hidden>Cancelar envio</button></div>
+</form>
+</section>
+<section class="panel"><div class="section-heading"><div><p class="eyebrow">Controle de publicação</p><h2>Seus vídeos</h2></div><button id="refresh" type="button">Atualizar lista</button></div><p class="hint">Publicações aparecem no catálogo online. Remover uma publicação do catálogo não apaga seu rascunho.</p><div id="video-list" aria-live="polite"><p>Carregando vídeos…</p></div></section>
+</div>
+</main>
+<footer>Administração protegida por autenticação e permissões no servidor.</footer>
+<script type="module" src="admin.mjs"></script>
+</body>
+</html>

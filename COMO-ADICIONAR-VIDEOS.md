@@ -1,6 +1,6 @@
 # Como colocar seus vídeos
 
-Você não precisa saber usar uma API. Há duas opções, com resultados diferentes.
+Você não precisa saber usar uma API. Para publicar sem editar código, use o novo [Painel do administrador](docs/PAINEL-ADMIN.md): envie vídeo e capa, salve o rascunho e toque em Publicar. O limite inicial é 50 MiB por vídeo. As duas opções abaixo continuam disponíveis.
 
 ## 1. Assistir a um arquivo do celular ou computador
 

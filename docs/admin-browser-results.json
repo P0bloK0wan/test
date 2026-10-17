@@ -1,0 +1,63 @@
+{
+  "mode": "MOCK",
+  "checks": 14,
+  "results": [
+    {
+      "label": "Login inicial",
+      "passed": true
+    },
+    {
+      "label": "Cadastro informa confirmação e-mail",
+      "passed": true
+    },
+    {
+      "label": "Recuperação não enumera conta",
+      "passed": true
+    },
+    {
+      "label": "Login libera painel com autorização servidor mock",
+      "passed": true
+    },
+    {
+      "label": "Upload simulado cria rascunho sem publicar",
+      "passed": true
+    },
+    {
+      "label": "Publicação explícita",
+      "passed": true
+    },
+    {
+      "label": "Retirada mantém rascunho",
+      "passed": true
+    },
+    {
+      "label": "Exclusão confirmada",
+      "passed": true
+    },
+    {
+      "label": "Sem rolagem horizontal em 390px",
+      "passed": true
+    },
+    {
+      "label": "Sem erros JavaScript",
+      "passed": true
+    },
+    {
+      "label": "Administrador altera a própria senha sem recuperar por e-mail",
+      "passed": true
+    },
+    {
+      "label": "Logout volta ao login",
+      "passed": true
+    },
+    {
+      "label": "Configuração pendente não mostra formulário de senha",
+      "passed": true
+    },
+    {
+      "label": "Fluxo PASSWORD_RECOVERY atualiza senha",
+      "passed": true
+    }
+  ],
+  "note": "UI com transporte/backend simulado; não verifica Supabase real, permissões RLS reais, entrega de e-mail, upload remoto nem codec de vídeo."
+}
