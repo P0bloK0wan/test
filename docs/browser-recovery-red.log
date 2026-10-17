@@ -1,0 +1,24 @@
+PASS Home renders original Sintel hero and eleven catalog titles
+PASS All local film images decode without broken assets
+PASS Title search and accent-insensitive genre text search work
+PASS Genre selection filters the film catalog
+PASS Details save, my list, reload persistence, and rating persistence
+PASS Keyboard Escape closes details and restores the invoking control focus
+PASS Profile creation and switching isolate each saved list
+PASS Playback preferences persist through a reload
+PASS Native local trailer loads, plays, seeks, saves and resumes actual progress
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for locator('#video-error') to be visible[22m
+[2m    13 × locator resolved to hidden <div hidden="" id="video-error" class="video-error">…</div>[22m
+
+    at /workspace/rea-workspace/implementations/netflix-web/tests/browser.mjs:93:40
+    at async check (/workspace/rea-workspace/implementations/netflix-web/tests/browser.mjs:12:38)
+    at async file:///workspace/rea-workspace/implementations/netflix-web/tests/browser.mjs:89:3 {
+  name: 'TimeoutError'
+}
+Page errors: []
+Progress diagnostic: [
+  { id: 'default', progress: { sintel: [Object] } },
+  { id: 'profile-mvcc57s5-1', progress: {} }
+]

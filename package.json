@@ -1,0 +1,18 @@
+{
+  "name": "netflix-web-independent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent open-cinema catalogue inspired by static APK observations",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs",
+    "test:browser": "node tests/browser.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.58.2"
+  }
+}

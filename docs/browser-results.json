@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "checkedAt": "2026-10-17T12:11:21.974Z",
+  "checks": [
+    {
+      "label": "Home renders original Sintel hero and eleven catalog titles",
+      "passed": true
+    },
+    {
+      "label": "All local film images decode without broken assets",
+      "passed": true
+    },
+    {
+      "label": "Title search and accent-insensitive genre text search work",
+      "passed": true
+    },
+    {
+      "label": "Genre selection filters the film catalog",
+      "passed": true
+    },
+    {
+      "label": "Details save, my list, reload persistence, and rating persistence",
+      "passed": true
+    },
+    {
+      "label": "Keyboard Escape closes details and restores the invoking control focus",
+      "passed": true
+    },
+    {
+      "label": "Profile creation and switching isolate each saved list",
+      "passed": true
+    },
+    {
+      "label": "Playback preferences persist through a reload",
+      "passed": true
+    },
+    {
+      "label": "Child profile filtering, read notices, editing and deletion work",
+      "passed": true
+    },
+    {
+      "label": "Native local trailer loads, plays, seeks, saves and resumes actual progress",
+      "passed": true
+    },
+    {
+      "label": "Unavailable local trailer shows an actionable recovery panel",
+      "passed": true
+    },
+    {
+      "label": "Skip link keeps the current view and focuses main content",
+      "passed": true
+    },
+    {
+      "label": "375px mobile home has no horizontal document overflow",
+      "passed": true
+    },
+    {
+      "label": "Motion runs when allowed and respects reduced-motion changes",
+      "passed": true
+    },
+    {
+      "label": "A device file plays locally and its object URL is revoked on close",
+      "passed": true
+    },
+    {
+      "label": "An owner-configured catalog video plays natively and saves progress",
+      "passed": true
+    },
+    {
+      "label": "No uncaught application errors",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Official YouTube full-film playback not exercised; external network requests blocked.",
+    "APK runtime, Android device, iOS, and real user account services not exercised."
+  ],
+  "screenshots": [
+    "docs/desktop.png",
+    "docs/mobile.png"
+  ]
+}

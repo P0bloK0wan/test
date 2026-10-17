@@ -1,0 +1,262 @@
+[
+  {
+    "path": ".gitignore",
+    "bytes": 39,
+    "sha256": "c6a22cb9886d81f4c60cc335f5753c18ba32475e8e39e751fb83db7cfbb97303"
+  },
+  {
+    "path": ".openai/hosting.json",
+    "bytes": 106,
+    "sha256": "aa204f5410a93a650286367fe438b81aaa84121d2956b72c000408668efe77cf"
+  },
+  {
+    "path": "ASSET-CREDITS.md",
+    "bytes": 3600,
+    "sha256": "d58c9fc00abbc8a638c0005ef58caa09377b3df285276baa02b8a5021ca804b3"
+  },
+  {
+    "path": "COMO-ADICIONAR-VIDEOS.md",
+    "bytes": 3952,
+    "sha256": "cbcf2b7807537c2be818b26340cf914d75f366351b285f619af656ac974474a2"
+  },
+  {
+    "path": "LICENSE",
+    "bytes": 1261,
+    "sha256": "345ae7ccd57d459e81fe291e6462cf56cdfd6c31eadef5cd80589c9e648aea1f"
+  },
+  {
+    "path": "README.md",
+    "bytes": 2793,
+    "sha256": "1b2b0a6ab34701ec7de38dd898f9e0fdf8bdc86324b44b3145c638e9ea1177e8"
+  },
+  {
+    "path": "dist/app.mjs",
+    "bytes": 32457,
+    "sha256": "3e580969182e09843cce0173b66dfd4b36482ecc9e7aca71b05647d50bab2d09"
+  },
+  {
+    "path": "dist/assets/agent-327.webp",
+    "bytes": 142650,
+    "sha256": "784f4be09b2e14b9a76dc26f23ddd71d30eef73ebdf6cff76d50db64ba5dbc26"
+  },
+  {
+    "path": "dist/assets/big-buck-bunny.webp",
+    "bytes": 137404,
+    "sha256": "d67a7752c935fdd65fbeeb04a694e85d17265ede562deba535ec4d9a25d44062"
+  },
+  {
+    "path": "dist/assets/caminandes-3.webp",
+    "bytes": 134088,
+    "sha256": "61feacb1b77955760a60d5fe8583bd2c81f450cdd3c087efbce330ed9d94ffc7"
+  },
+  {
+    "path": "dist/assets/charge.webp",
+    "bytes": 192654,
+    "sha256": "55e0602647b73ecd9f68c50a6d8b659aa4f3d84df43d0122ada97d03245d86e3"
+  },
+  {
+    "path": "dist/assets/cosmos-laundromat.webp",
+    "bytes": 162776,
+    "sha256": "f222c50a0da758bc9204e0256098cfe57dfcbc5b73d207fce511f1d9902cda81"
+  },
+  {
+    "path": "dist/assets/elephants-dream.webp",
+    "bytes": 146986,
+    "sha256": "95f6ce8c4c8cbc319c442e528fb784433799d5f3e5148a7fd9b59a05e16168c7"
+  },
+  {
+    "path": "dist/assets/favicon.svg",
+    "bytes": 185,
+    "sha256": "b2138b4b0fc8d540afd05da6145ad5a6e6b66f374aee72a9a76b0e2a1fdc8b16"
+  },
+  {
+    "path": "dist/assets/media/big-buck-bunny-trailer.mp4",
+    "bytes": 11053871,
+    "sha256": "b2ded9ae5a20fa36ca8cec49ef923bffb5e1a51d9e8c1f8336273d2fa9d35ff0"
+  },
+  {
+    "path": "dist/assets/media/sintel-trailer.mp4",
+    "bytes": 4372373,
+    "sha256": "b670602fa00934ca27c4351bb0efe7ea7a07fae57284e44226025eeed7c51254"
+  },
+  {
+    "path": "dist/assets/own-video.svg",
+    "bytes": 470,
+    "sha256": "e83a46d493c7ebac7f165f421f9571984c0d42104dc888b3448be72affe47eb7"
+  },
+  {
+    "path": "dist/assets/sintel-hero.png",
+    "bytes": 5819379,
+    "sha256": "124480a28306d64cad3d8c476d25ab35727300df124db4614816a4868c14b0ce"
+  },
+  {
+    "path": "dist/assets/sintel.webp",
+    "bytes": 207948,
+    "sha256": "0e2e9df4cbd55a24fc651e8cba069547e2072cdd87a047047a9af5d6e0b60346"
+  },
+  {
+    "path": "dist/assets/spring.webp",
+    "bytes": 196958,
+    "sha256": "7fa5ebeef3994e9ccffe9c359a00ae4d1cf8d5a83dcaac8ab6a2b6c31d26a3be"
+  },
+  {
+    "path": "dist/assets/sprite-fright.webp",
+    "bytes": 200580,
+    "sha256": "c399f3faa85a385c5078043a882a98d922984d9e957aa2efdc659fdda0259df8"
+  },
+  {
+    "path": "dist/assets/tears-of-steel.webp",
+    "bytes": 295988,
+    "sha256": "c99db5e6e2cd80a087c8b5db29bb6935628d8c6befe32a21007187b445fca576"
+  },
+  {
+    "path": "dist/assets/wing-it.webp",
+    "bytes": 52746,
+    "sha256": "7ba346517e6198b6b94f28196c6b3cf13398e9b3faf7bf2a21f3c31c2006fdf1"
+  },
+  {
+    "path": "dist/catalog-query.mjs",
+    "bytes": 931,
+    "sha256": "ef3ba1ebb8d7467b546c5b65019a1ecff657e4cb82ad4d0e26b57f7dcaa73dc7"
+  },
+  {
+    "path": "dist/catalog.mjs",
+    "bytes": 5950,
+    "sha256": "ab3ec7f6a8c00b80a2c4e11bbcb5e98b0c6f44564c6d3e836154e379e989becf"
+  },
+  {
+    "path": "dist/index.html",
+    "bytes": 2927,
+    "sha256": "a0bc6311d582e62ba988ac79e2f7fb44acf99e99fc7846a5c2c1659d557b2970"
+  },
+  {
+    "path": "dist/library.mjs",
+    "bytes": 7677,
+    "sha256": "b569b2362e532a5f8cfbf6e71f521a4d0550c481716d492a2db22e1d4838720f"
+  },
+  {
+    "path": "dist/motion.css",
+    "bytes": 2532,
+    "sha256": "7d5b5122a425cd575fd7b14b82c0a76878e48830c938888af91feaf2017c3aa8"
+  },
+  {
+    "path": "dist/motion.mjs",
+    "bytes": 2347,
+    "sha256": "72485fe3a04b8dc0edfc6491057471fdb5b2c6bf327d99a7b993c154f71e406e"
+  },
+  {
+    "path": "dist/my-videos.mjs",
+    "bytes": 421,
+    "sha256": "fc52b05f98a3479dfcbac6af92af06df22421d050c7b5cd50b8fd022e0524272"
+  },
+  {
+    "path": "dist/styles.css",
+    "bytes": 27109,
+    "sha256": "0f59508d63c1c6ccc1da1c3b78aaaa6c58c599fcf6d40839a275460cd9bd1883"
+  },
+  {
+    "path": "docs/analysis.md",
+    "bytes": 4484,
+    "sha256": "b4bffca816f849cef7ec10853ded2bb80d7e99e95d923f4da8f7569f5349180c"
+  },
+  {
+    "path": "docs/asset-provenance.json",
+    "bytes": 7161,
+    "sha256": "feb3641d6d5ad13ba78d27e515bb27414b7c302a6b4ce447a98f36bfe973067a"
+  },
+  {
+    "path": "docs/browser-progress-red.log",
+    "bytes": 988,
+    "sha256": "581bb83cf858dbfcbe33d918084db2aa549e85f3dbecfbebfadf91996227a789"
+  },
+  {
+    "path": "docs/browser-recovery-red.log",
+    "bytes": 1238,
+    "sha256": "285727071bd76142edda529ee00686642f53446eccf24de3fc45e364cdda40e5"
+  },
+  {
+    "path": "docs/browser-results.json",
+    "bytes": 2224,
+    "sha256": "1f4f8901c6dc147e0e3abbdf80a05d815a3005157696e9186569dedfaa45081e"
+  },
+  {
+    "path": "docs/browser-review.md",
+    "bytes": 1409,
+    "sha256": "2377c0fbff343ae9f7f35f44d90bc652485bcf2788f8a3dd70707cd1740fe927"
+  },
+  {
+    "path": "docs/browser-tests.log",
+    "bytes": 1103,
+    "sha256": "9e32cb629750659f95e6f9452dc828201c040781250b321a2568d9c3aa1a2a2f"
+  },
+  {
+    "path": "docs/design.md",
+    "bytes": 3308,
+    "sha256": "4a8ae732c6dca605aa7b918a2f5e0a0aaaaed34904495a69bcbcf9df8002234f"
+  },
+  {
+    "path": "docs/desktop.png",
+    "bytes": 2363346,
+    "sha256": "fba629f2333f0f6e0ac578af94a3f72575bac387ab420d6bfce4c3798ae8147c"
+  },
+  {
+    "path": "docs/mobile.png",
+    "bytes": 602898,
+    "sha256": "6df7173a629ea35d01473b60b85cf8f2afccb56d024cd82d3c545d36c25bddb3"
+  },
+  {
+    "path": "docs/node-tests.log",
+    "bytes": 757,
+    "sha256": "fa446a720bfb8e28bc87d2fa4c23cb6e7a078ff2cfa64012d9dc9e86d6b94626"
+  },
+  {
+    "path": "docs/plan.md",
+    "bytes": 876,
+    "sha256": "7f08e0ac988d85f3b8b4efb9ac61a76be8b44938e972e264bdb393e6f6abf8b8"
+  },
+  {
+    "path": "docs/preview-desktop.png",
+    "bytes": 7667,
+    "sha256": "82d54a241bac0f0b9a0ba1df3eea19ceb19667e3c3f2c33815650d26b46c025d"
+  },
+  {
+    "path": "docs/review-resolutions.md",
+    "bytes": 1360,
+    "sha256": "0d427e7e90dde1e10f60cd6c1c262f50052742715dd033d5502d8f4536185b1c"
+  },
+  {
+    "path": "docs/server-red.log",
+    "bytes": 977,
+    "sha256": "28d27192d545de108f78e56d690d9a9cc706b5f8977b79ba3d2c1544bf245d2c"
+  },
+  {
+    "path": "package-lock.json",
+    "bytes": 780,
+    "sha256": "cab10d5c8a5aec0f23d22d36222c51ba9c3622d8fef87bea0b8737c05ecfbc50"
+  },
+  {
+    "path": "package.json",
+    "bytes": 486,
+    "sha256": "cafeb9304aefbf375b25cf9403783246bab361373e41a9763af192d55a8e7a1d"
+  },
+  {
+    "path": "server.mjs",
+    "bytes": 3000,
+    "sha256": "5c5e259cd95c149d02db3ce08826b1797e6baf795abb07a62d67bb3d0320575a"
+  },
+  {
+    "path": "tests/browser.mjs",
+    "bytes": 15235,
+    "sha256": "6291705336f0de9772cddf4f233976b0507047cdfa8c3020865a1ff5b5d86f0b"
+  },
+  {
+    "path": "tests/library.test.mjs",
+    "bytes": 5918,
+    "sha256": "021a09816183bd1a81b8cfd7226dea02541d23c967c584a14dde21c81700af0e"
+  },
+  {
+    "path": "tests/server.test.mjs",
+    "bytes": 1431,
+    "sha256": "75c395c8f2ae3605aace771ee0fdac05518903d5a4d1ce95a6e5c37bad3be55c"
+  }
+]

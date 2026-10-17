@@ -1,0 +1,29 @@
+✖ static site serves its root, modules, byte ranges and rejects outside paths (34.006119ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 77.767723
+
+✖ failing tests:
+
+test at implementations/netflix-web/tests/server.test.mjs:4:1
+✖ static site serves its root, modules, byte ranges and rejects outside paths (34.006119ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  403 !== 200
+  
+      at TestContext.<anonymous> (file:///workspace/rea-workspace/implementations/netflix-web/tests/server.test.mjs:7:43)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 403,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

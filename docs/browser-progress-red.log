@@ -1,0 +1,22 @@
+PASS Home renders original Sintel hero and eleven catalog titles
+PASS All local film images decode without broken assets
+PASS Title search and accent-insensitive genre text search work
+PASS Genre selection filters the film catalog
+PASS Details save, my list, reload persistence, and rating persistence
+PASS Keyboard Escape closes details and restores the invoking control focus
+PASS Profile creation and switching isolate each saved list
+PASS Playback preferences persist through a reload
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+    at file:///workspace/rea-workspace/implementations/netflix-web/tests/browser.mjs:84:12
+    at async check (file:///workspace/rea-workspace/implementations/netflix-web/tests/browser.mjs:12:38)
+    at async file:///workspace/rea-workspace/implementations/netflix-web/tests/browser.mjs:78:3 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

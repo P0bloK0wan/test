@@ -1,0 +1,15 @@
+✔ library persists all profile-specific actions and active profile across reloads (2.961803ms)
+✔ validates before mutation and enforces profile limits and safe deletion (0.935963ms)
+✔ copies cannot mutate state and arbitrary IDs cannot pollute prototypes (0.290397ms)
+✔ progress clamps, orders by recency and removes completed movies (0.40724ms)
+✔ invalid persistence is sanitized and storage failures preserve usable memory (0.646522ms)
+✔ query combines accent-insensitive fields, genre, kind, saved and kids restrictions (0.736137ms)
+✔ static site serves its root, modules, byte ranges and rejects outside paths (61.100451ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 116.014993

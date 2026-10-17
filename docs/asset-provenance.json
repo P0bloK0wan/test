@@ -1,0 +1,142 @@
+[
+  {
+    "path": "implementations/netflix-web/dist/assets/tears-of-steel.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/3c/83/3c833d978e7de4b58eaa1a12be541664_m.webp",
+    "bytes": 295988,
+    "sha256": "c99db5e6e2cd80a087c8b5db29bb6935628d8c6befe32a21007187b445fca576",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/tears-of-steel/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/sintel.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/03/f7/03f7b0d15c55b428680d4c6bb313f742_m.webp",
+    "bytes": 207948,
+    "sha256": "0e2e9df4cbd55a24fc651e8cba069547e2072cdd87a047047a9af5d6e0b60346",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/sintel/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/elephants-dream.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/04/77/0477dfea1d88a94ba1a75f99f433b8f6_m.webp",
+    "bytes": 146986,
+    "sha256": "95f6ce8c4c8cbc319c442e528fb784433799d5f3e5148a7fd9b59a05e16168c7",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/elephants-dream/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/wing-it.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/c2/6d/c26d3b56aeb6bc9bf1ba6ee8e27b7ccd_m.webp",
+    "bytes": 52746,
+    "sha256": "7ba346517e6198b6b94f28196c6b3cf13398e9b3faf7bf2a21f3c31c2006fdf1",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/wing-it/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/cosmos-laundromat.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/75/54/7554352c0ec78a8540a8e5f3b3671927_m.webp",
+    "bytes": 162776,
+    "sha256": "f222c50a0da758bc9204e0256098cfe57dfcbc5b73d207fce511f1d9902cda81",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/cosmos-laundromat/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/caminandes-3.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/6e/84/6e84fd08dda59d66aeb2152cb879f160_m.webp",
+    "bytes": 134088,
+    "sha256": "61feacb1b77955760a60d5fe8583bd2c81f450cdd3c087efbce330ed9d94ffc7",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/caminandes-3/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/sprite-fright.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/ce/83/ce833b1d7d5862f1c6e64f7d5b8b0fc9_m.webp",
+    "bytes": 200580,
+    "sha256": "c399f3faa85a385c5078043a882a98d922984d9e957aa2efdc659fdda0259df8",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/sprite-fright/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/charge.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/ae/13/ae134adfbfa91160947451873ab09c6d_m.webp",
+    "bytes": 192654,
+    "sha256": "55e0602647b73ecd9f68c50a6d8b659aa4f3d84df43d0122ada97d03245d86e3",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/charge/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/big-buck-bunny.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/92/96/9296b1255fff3ef0e25da43f70616349_m.webp",
+    "bytes": 137404,
+    "sha256": "d67a7752c935fdd65fbeeb04a694e85d17265ede562deba535ec4d9a25d44062",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/big-buck-bunny/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/agent-327.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/37/cd/37cdbd9f849e917fcb4c7269cba43343_m.webp",
+    "bytes": 142650,
+    "sha256": "784f4be09b2e14b9a76dc26f23ddd71d30eef73ebdf6cff76d50db64ba5dbc26",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/agent-327/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/spring.webp",
+    "url": "https://studio.blender.org/files/public/thumbnail/ea/65/ea65feaacf95911f39844e2ea97e68b5_m.webp",
+    "bytes": 196958,
+    "sha256": "7fa5ebeef3994e9ccffe9c359a00ae4d1cf8d5a83dcaac8ab6a2b6c31d26a3be",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/spring/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/sintel-hero.png",
+    "url": "https://studio.blender.org/files/public/header/project/c0/91/c091f1c8d6aacd18e0285989b69587d3.png",
+    "bytes": 5819379,
+    "sha256": "124480a28306d64cad3d8c476d25ab35727300df124db4614816a4868c14b0ce",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 4.0",
+    "source": "https://studio.blender.org/projects/sintel/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/media/sintel-trailer.mp4",
+    "url": "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    "bytes": 4372373,
+    "sha256": "b670602fa00934ca27c4351bb0efe7ea7a07fae57284e44226025eeed7c51254",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 3.0",
+    "source": "https://studio.blender.org/projects/sintel/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  },
+  {
+    "path": "implementations/netflix-web/dist/assets/media/big-buck-bunny-trailer.mp4",
+    "url": "https://media.w3.org/2010/05/bunny/trailer.mp4",
+    "bytes": 11053871,
+    "sha256": "b2ded9ae5a20fa36ca8cec49ef923bffb5e1a51d9e8c1f8336273d2fa9d35ff0",
+    "credit": "Blender Foundation / Blender Studio",
+    "license": "CC BY 3.0",
+    "source": "https://studio.blender.org/projects/big-buck-bunny/",
+    "license_reference": "https://studio.blender.org/terms-and-conditions/"
+  }
+]

@@ -1,0 +1,18 @@
+PASS Home renders original Sintel hero and eleven catalog titles
+PASS All local film images decode without broken assets
+PASS Title search and accent-insensitive genre text search work
+PASS Genre selection filters the film catalog
+PASS Details save, my list, reload persistence, and rating persistence
+PASS Keyboard Escape closes details and restores the invoking control focus
+PASS Profile creation and switching isolate each saved list
+PASS Playback preferences persist through a reload
+PASS Child profile filtering, read notices, editing and deletion work
+PASS Native local trailer loads, plays, seeks, saves and resumes actual progress
+PASS Unavailable local trailer shows an actionable recovery panel
+PASS Skip link keeps the current view and focuses main content
+PASS 375px mobile home has no horizontal document overflow
+PASS Motion runs when allowed and respects reduced-motion changes
+PASS A device file plays locally and its object URL is revoked on close
+PASS An owner-configured catalog video plays natively and saves progress
+PASS No uncaught application errors
+{"passed":true,"checks":17}
