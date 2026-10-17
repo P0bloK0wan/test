@@ -1,0 +1,6 @@
+{
+  "mode": "LIVE_SUPABASE_AND_REAL_MP4",
+  "checkedAt": "2026-10-17",
+  "localChecksPassed": ["Anonymous catalogue and native MP4 playback", "Own player seek and controls", "No persisted guest list or progress", "Explicit account gate for save", "Requested save completed after verified account login", "Administrator protected", "Sign-out returns to public catalogue"],
+  "limits": ["No user-provided Google Drive video link available for playback verification", "Drive and YouTube use provider players; their progress is unavailable", "Email signup confirmation delivery still requires SMTP configuration", "No physical iPhone test"]
+}

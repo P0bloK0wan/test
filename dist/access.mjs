@@ -11,21 +11,24 @@ function unavailable(){
  main.append(title,text,retry,login);document.body.replaceChildren(main);document.body.removeAttribute('data-auth-pending');
 }
 export async function requireViewer({admin=false}={}){
- if(!cloud.ready||!cloud.client){unavailable();return null;}
+ const guest=Object.freeze({guest:true});
+ if(!cloud.ready||!cloud.client){if(admin){unavailable();return null;}return guest;}
  try{
   const {data,error}=await cloud.client.auth.getUser();
   if(!data?.user){
-   if(error&&/fetch|network|timeout/i.test(error.message||'')){unavailable();return null;}
-   location.replace(loginDestination(admin));return null;
+   if(admin){if(error&&/fetch|network|timeout/i.test(error.message||'')){unavailable();return null;}location.replace(loginDestination(true));return null;}
+   cloud.client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session?.user?.id)location.reload();});
+   addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
+   return guest;
   }
   if(error){unavailable();return null;}
   viewer=Object.freeze({id:data.user.id,email:data.user.email||''});
   viewerIsAdmin=await cloud.isAdmin();
   if(admin&&!viewerIsAdmin){location.replace(new URL('index.html',location.href).href);return null;}
   cloud.client.auth.onAuthStateChange((event,session)=>{
-   if(event==='SIGNED_OUT'||(session?.user?.id&&session.user.id!==viewer.id))location.replace(loginDestination(admin));
+   if(event==='SIGNED_OUT'||(session?.user?.id&&session.user.id!==viewer.id))location.replace(admin?loginDestination(true):new URL('index.html',location.href).href);
   });
   addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
   return viewer;
- }catch{unavailable();return null;}
+ }catch{if(!admin)return guest;unavailable();return null;}
 }

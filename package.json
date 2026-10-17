@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs tests/drive-link.test.mjs tests/metadata-handler.test.mjs tests/library-sync.test.mjs tests/profile-personal.test.mjs",
+    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs tests/drive-link.test.mjs tests/metadata-handler.test.mjs tests/library-sync.test.mjs tests/profile-personal.test.mjs tests/account-intent.test.mjs",
     "test:browser": "node tests/browser.mjs",
     "build": "node scripts/build-cloud.mjs",
     "test:admin": "node tests/admin-browser.mjs",
@@ -17,7 +17,8 @@
     "test:metadata": "node tests/metadata-browser.mjs",
     "test:personal": "node tests/personal-browser.mjs",
     "test:player": "node tests/player-browser.mjs",
-    "test:wizard": "node tests/admin-wizard-browser.mjs"
+    "test:wizard": "node tests/admin-wizard-browser.mjs",
+    "test:guest": "node tests/guest-browser.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

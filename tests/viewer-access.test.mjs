@@ -7,7 +7,7 @@ const key = process.env.CINEMA_TEST_PUBLISHABLE_KEY;
 const admin = process.env.CINEMA_TEST_ADMIN_JWT;
 const viewer = process.env.CINEMA_TEST_VIEWER_JWT;
 
-test('live viewer access: login required for published catalogue and media; signup grants no administration', {
+test('live viewer access: guests browse public videos; account libraries and administration remain private', {
   skip: !(url && key && admin && viewer) && 'Requires dedicated live project and two temporary confirmed sessions',
 }, async () => {
   const id = randomUUID();
@@ -37,8 +37,8 @@ test('live viewer access: login required for published catalogue and media; sign
 
     const anonymous = await api(`${route}&select=id,title`, undefined);
     assert.ok(anonymous.ok);
-    assert.deepEqual(await anonymous.json(), [], 'Anon must not receive published titles');
-    assert.ok((await sign(undefined)).status >= 400, 'Anon cannot create signed links for published media');
+    assert.deepEqual(await anonymous.json(), [{ id, title: 'Viewer access integration fixture' }], 'Guest can browse published titles');
+    assert.ok((await sign(undefined)).ok, 'Guest can create signed links for published media');
     const publicRead = await api(`/storage/v1/object/public/cinema-media/${imagePath}`, undefined);
     assert.ok(publicRead.status >= 400, 'Bucket remains private');
 
@@ -49,10 +49,21 @@ test('live viewer access: login required for published catalogue and media; sign
     assert.equal(await (await json('/rest/v1/rpc/cinema_admin_access', viewer, 'POST', {})).json(), false, 'Viewer is not administrator');
     assert.ok((await api('/rest/v1/cinema_admins?select=email', viewer)).status >= 400, 'Viewer cannot read the allowlist');
     assert.ok((await json('/rest/v1/cinema_admins', viewer, 'POST', { email: 'unauthorised-viewer@example.invalid' })).status >= 400, 'Viewer cannot promote an account');
-    await rejectedOrNoRows(await json(route, viewer, 'PATCH', { status: 'draft' }), 'Viewer cannot change publication state');
-    await rejectedOrNoRows(await api(route, viewer, { method: 'DELETE', headers: { Prefer: 'return=representation' } }), 'Viewer cannot delete published videos');
+    for (const token of [undefined, viewer]) {
+      await rejectedOrNoRows(await json(route, token, 'PATCH', { status: 'draft' }), 'Guest or viewer cannot change publication state');
+      await rejectedOrNoRows(await api(route, token, { method: 'DELETE', headers: { Prefer: 'return=representation' } }), 'Guest or viewer cannot delete published videos');
+    }
+    assert.ok((await api('/rest/v1/cinema_libraries?select=user_id', undefined)).status >= 400, 'Guest has no account library privileges');
+    const identity = await (await api('/auth/v1/user', viewer)).json();
+    assert.ok(identity.id, 'Viewer has a real authenticated identity');
+    const libraries = await api('/rest/v1/cinema_libraries?select=user_id', viewer);
+    assert.ok(libraries.ok);
+    const ownLibraries = await libraries.json();
+    assert.ok(Array.isArray(ownLibraries) && ownLibraries.every(row => row.user_id === identity.id), 'Viewer cannot discover other account libraries');
 
     assert.ok((await json(route, admin, 'PATCH', { status: 'draft' })).ok);
+    assert.deepEqual(await (await api(`${route}&select=id`, undefined)).json(), [], 'Guest cannot read drafts');
+    assert.ok((await sign(undefined)).status >= 400, 'Guest cannot sign draft media');
     assert.deepEqual(await (await api(`${route}&select=id`, viewer)).json(), [], 'Viewer cannot read drafts');
     assert.ok((await sign(viewer)).status >= 400, 'Viewer cannot sign draft media');
     assert.deepEqual(await (await api(`${route}&select=id`, admin)).json(), [{ id }], 'Admin still reads drafts');

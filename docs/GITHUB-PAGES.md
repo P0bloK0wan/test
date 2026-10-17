@@ -1,5 +1,7 @@
 # Publicação no GitHub Pages
 
+> Regra atual: o catálogo e os vídeos publicados podem ser acessados sem conta. Cadastro/login são necessários para salvar lista e progresso. A administração e as bibliotecas pessoais continuam protegidas. Veja [acesso público](PUBLIC-VIEWING.md).
+
 Site: https://p0blok0wan.github.io/test/
 Código: https://github.com/P0bloK0wan/test (branch main)
 Publicação: branch gh-pages, pasta /(root). A branch main contém código e documentação, não é o endereço do site.

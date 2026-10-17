@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {rememberAccountIntent,takeAccountIntent} from '../dist/account-intent.mjs';
+const memory=()=>{const m=new Map();return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)}};
+test('account intent preserves one requested save, expires and rejects external destinations',()=>{const s=memory();rememberAccountIntent(s,{action:'save',id:'sintel',hash:'#/films'});assert.equal(takeAccountIntent(s).id,'sintel');assert.equal(takeAccountIntent(s),null);rememberAccountIntent(s,{action:'save',id:'<script>',hash:'https://evil.example'});const value=takeAccountIntent(s);assert.equal(value,null);s.setItem('streamlab.account-intent.v1',JSON.stringify({action:'save',id:'sintel',hash:'#/films',createdAt:Date.now()-31*60*1000}));assert.equal(takeAccountIntent(s),null);});
+
+test('peeking pending save preserves it across failed catalogue loads',()=>{const s=memory();rememberAccountIntent(s,{action:'save',id:'cloud-film',hash:'#/films'});assert.equal(takeAccountIntent(s,{consume:false}).id,'cloud-film');assert.equal(takeAccountIntent(s,{consume:false}).id,'cloud-film');assert.equal(takeAccountIntent(s).id,'cloud-film');assert.equal(takeAccountIntent(s),null);});

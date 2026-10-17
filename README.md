@@ -1,5 +1,7 @@
 # Netflix Web — implementação independente
 
+> Regra atual: o catálogo e os vídeos publicados podem ser acessados sem conta. Cadastro/login são necessários para salvar lista e progresso. A administração e as bibliotecas pessoais continuam protegidas. Veja [acesso público](docs/PUBLIC-VIEWING.md).
+
 **[ABRIR O SITE](https://p0blok0wan.github.io/test/)** · **[ENTRAR OU CRIAR CONTA](https://p0blok0wan.github.io/test/login.html)** · **[PAINEL DE ADMINISTRAÇÃO](https://p0blok0wan.github.io/test/admin.html)**
 
 A aba `main` do GitHub exibe os arquivos do projeto. O endereço de publicação do site é https://p0blok0wan.github.io/test/. O GitHub Pages serve a interface publicamente; para acessar o catálogo compartilhado, crie uma conta, confirme seu e-mail e entre. O painel exige também autorização administrativa no servidor. Descobrir ou abrir `admin.html` não concede permissão de administração.

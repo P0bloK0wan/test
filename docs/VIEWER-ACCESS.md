@@ -1,5 +1,7 @@
 # Login de espectadores e administração
 
+> Regra atual: o catálogo e os vídeos publicados podem ser acessados sem conta. Cadastro/login são necessários para salvar lista e progresso. A administração e as bibliotecas pessoais continuam protegidas. Veja [acesso público](PUBLIC-VIEWING.md).
+
 `backend/viewer-access.sql`, migração `cinema_viewer_access`, exige uma sessão autenticada para consultar os vídeos publicados do catálogo compartilhado e para gerar novos links assinados dos arquivos correspondentes no bucket privado `cinema-media`. Visitantes sem sessão não recebem linhas de `cinema_videos` nem podem assinar esses arquivos. A migração substitui somente as duas políticas de leitura de publicação; não muda registros, políticas administrativas, allowlist, funções de administrador nem confirmação de e-mail.
 
 ## Cadastro e confirmação
