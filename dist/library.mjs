@@ -1,11 +1,12 @@
+import {validAvatar} from './avatars.mjs';
 const KEY = 'netflix-web.library.v1';
 const COLORS = new Set(['red', 'blue', 'teal', 'gold', 'violet']);
 const own = (object, key) => Object.hasOwn(object, key);
 const copy = value => JSON.parse(JSON.stringify(value));
 const validId = value => typeof value === 'string' && value.length > 0 && value.length <= 256;
 const finite = value => typeof value === 'number' && Number.isFinite(value);
-const emptyProfile = (id, name, color, kids) => ({id, name, color, kids, savedIds: [], ratings: Object.create(null), progress: Object.create(null), preferences: {autoplay: true, muted: true}, readNotices: []});
-const publicProfile = ({id, name, color, kids}) => ({id, name, color, kids});
+const emptyProfile = (id, name, color, kids) => ({id, name, color, kids, avatar:'classic', savedIds: [], ratings: Object.create(null), progress: Object.create(null), preferences: {autoplay: true, muted: true}, readNotices: []});
+const publicProfile = ({id, name, color, kids, avatar}) => ({id, name, color, kids, avatar});
 
 export function createLibrary(storage, {catalogIds = []} = {}) {
   const catalog = new Set(catalogIds);
@@ -23,6 +24,7 @@ export function createLibrary(storage, {catalogIds = []} = {}) {
       for (const input of parsed.profiles) {
         if (!input || !validId(input.id) || profiles.some(p => p.id === input.id) || typeof input.name !== 'string' || !input.name.trim() || input.name.trim().length > 24 || !COLORS.has(input.color)) continue;
         const p = emptyProfile(input.id, input.name.trim(), input.color, input.kids === true);
+        p.avatar = validAvatar(input.avatar) ? input.avatar : 'classic';
         p.savedIds = uniqueIds(input.savedIds, allowed);
         p.readNotices = uniqueIds(input.readNotices);
         if (input.ratings && typeof input.ratings === 'object') for (const [id, value] of Object.entries(input.ratings)) if (allowed(id) && [-1, 1, 2].includes(value)) p.ratings[id] = value;
@@ -67,6 +69,7 @@ export function createLibrary(storage, {catalogIds = []} = {}) {
       if (!name || name.length > 24) throw new RangeError('O nome deve ter de 1 a 24 caracteres.');
       if (!COLORS.has(input.color)) throw new RangeError('Cor inválida.');
       if (input.kids !== undefined && typeof input.kids !== 'boolean') throw new TypeError('Perfil infantil inválido.');
+      if (input.avatar !== undefined && !validAvatar(input.avatar)) throw new RangeError('Avatar inválido.');
       let p;
       if (input.id !== undefined) p = profileById(input.id);
       else {
@@ -77,6 +80,7 @@ export function createLibrary(storage, {catalogIds = []} = {}) {
         state.profiles.push(p);
       }
       Object.assign(p, {name, color: input.color, kids: input.kids === true});
+      if (input.avatar !== undefined) p.avatar = input.avatar;
       persist(); return publicProfile(p);
     },
     deleteProfile(id) {
@@ -93,6 +97,7 @@ export function createLibrary(storage, {catalogIds = []} = {}) {
     },
     isSaved(id) { movieId(id); return active().savedIds.includes(id); },
     savedIds: () => [...active().savedIds],
+    likedIds: () => Object.entries(active().ratings).filter(([,value])=>value>0).map(([id])=>id),
     rate(id, value) {
       movieId(id);
       if (value !== null && ![-1, 1, 2].includes(value)) throw new RangeError('Avaliação inválida.');

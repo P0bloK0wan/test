@@ -7,6 +7,8 @@
 <link rel="icon" type="image/svg+xml" href="assets/streamlab-mark.svg">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="motion.css">
+<link rel="stylesheet" href="personal.css">
+<link rel="stylesheet" href="streamlab-player.css">
 <link rel="preload" as="image" href="assets/sintel-hero.png">
 <style>body[data-auth-pending]{visibility:hidden}</style><link rel="stylesheet" href="brand.css">
 </head>
@@ -15,7 +17,7 @@
 <header id="header" class="header">
  <a href="#/home" class="wordmark" aria-label="Streamlab — início">Streamlab</a>
  <nav class="desktop-nav" aria-label="Navegação principal">
-  <a href="#/home" data-view="home">Início</a><a href="#/films" data-view="films">Filmes</a><a href="#/animation" data-view="animation">Animações</a><a href="#/new" data-view="new">Novidades</a><a href="#/list" data-view="list">Minha lista</a>
+  <a href="#/home" data-view="home">Início</a><a href="#/films" data-view="films">Filmes</a><a href="#/animation" data-view="animation">Animações</a><a href="#/new" data-view="new">Novidades</a><a href="#/list" data-view="list">Minha lista</a><a href="#/me" data-view="me">Minha Streamlab</a>
  </nav>
  <div class="header-actions">
   <div class="search-control"><button class="icon-button" id="search-toggle" aria-label="Buscar filmes"></button><input id="global-search" type="search" placeholder="Títulos, gêneros, histórias" aria-label="Buscar títulos, gêneros e histórias" autocomplete="off" hidden></div>
@@ -25,8 +27,8 @@
  <div id="header-panel" class="header-panel" hidden></div>
 </header>
 <main id="main" tabindex="-1"></main>
-<footer class="footer"><div class="footer-brand">Histórias que merecem ser descobertas.</div><div class="footer-links"><span id="admin-footer"></span><button data-action="local-video">Abrir vídeo do aparelho</button><button data-action="credits">Créditos do catálogo</button><button data-action="preferences">Preferências</button><button data-action="help">Ajuda</button></div><p>Uma seleção independente de cinema aberto. Perfis e listas ficam neste navegador.</p><small>© 2026 · Experiência independente de demonstração.</small></footer>
-<nav class="mobile-nav" aria-label="Navegação móvel"><a href="#/home" data-mobile="home"></a><a href="#/search" data-mobile="search"></a><a href="#/list" data-mobile="list"></a></nav>
+<footer class="footer"><div class="footer-brand">Histórias que merecem ser descobertas.</div><div class="footer-links"><span id="admin-footer"></span><button data-action="local-video">Abrir vídeo do aparelho</button><button data-action="credits">Créditos do catálogo</button><button data-action="preferences">Preferências</button><button data-action="help">Ajuda</button></div><p>Uma seleção independente de cinema aberto. Perfis e listas pertencem à sua conta. A área Minha Streamlab mostra o estado da sincronização.</p><small>© 2026 · Experiência independente de demonstração.</small></footer>
+<nav class="mobile-nav" aria-label="Navegação móvel"><a href="#/home" data-mobile="home"></a><a href="#/search" data-mobile="search"></a><a href="#/list" data-mobile="list"></a><a href="#/me" data-mobile="me"></a></nav>
 <input id="local-video-file" type="file" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv" hidden>
 <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>

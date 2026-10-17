@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-17",
+  "mode": "LIVE_SUPABASE",
+  "passed": true,
+  "checks": [
+    "Two isolated browser contexts restore same saved list and playback progress",
+    "Concurrent edits preserve pending local copy and show explicit conflict",
+    "Explicit remote conflict choice restores server version",
+    "Another account cannot read or mutate private library",
+    "Anonymous client denied private library",
+    "Actual profile/avatar UI saved and recovered in second browser"
+  ],
+  "limits": [
+    "No SMTP email delivery exercised",
+    "External Google Drive/YouTube iframe playback progress is unavailable",
+    "No continuous remote pull in already open pages; reopen or reload to hydrate"
+  ]
+}

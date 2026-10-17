@@ -8,7 +8,7 @@ const storage = () => { const values = new Map(); return {getItem:k=>values.get(
 test('library persists all profile-specific actions and active profile across reloads', () => {
   assert.equal(typeof createLibrary,'function');
   const disk=storage(), lib=createLibrary(disk,{catalogIds:['a','b']});
-  assert.deepEqual(lib.activeProfile(),{id:'default',name:'Você',color:'red',kids:false});
+  assert.deepEqual(lib.activeProfile(),{id:'default',name:'Você',color:'red',kids:false,avatar:'classic'});
   assert.equal(lib.toggleSaved('a'),true); lib.rate('a',2); lib.recordProgress('a',20,100);
   lib.setPreferences({autoplay:false,muted:false}); lib.markNoticesRead(['new']);
   const other=lib.saveProfile({name:'  Ana  ',color:'teal',kids:true});

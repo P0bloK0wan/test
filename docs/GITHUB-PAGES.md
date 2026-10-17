@@ -32,3 +32,11 @@ Execute `npm ci`, `npm run build` e os testes. Envie o código para main e o con
 No endereço público, navegador real com Supabase real confirmou: visitante redirecionado ao login; conta comum acessa catálogo sem links administrativos; conta comum não abre administração; administrador abre painel; logout retorna ao login. Dois testes HTTP de RLS passaram, incluindo mídia publicada acessível somente com sessão e bloqueio de escrita para conta comum. Identidade temporária de QA e seus dados foram removidos.
 
 A aplicação antiga hospedada em ChatGPT Sites foi substituída por um aviso de mudança; o registro do projeto antigo continua existindo, pois não há operação de exclusão disponível na integração. Deploy de retirada: appgdep_6ad37c7ca38481918cf82a593678afac, status succeeded.
+
+## Entrega pessoal/player (2026-10-17)
+
+A área Minha Streamlab, avatares originais e player próprio fazem parte do frontend estático. A sincronização usa a tabela privada cinema_libraries no projeto Supabase; veja as migrações library-sync.sql e library-sync-validation-fix.sql. Ambas foram aplicadas neste projeto. Perfis e listas passam a pertencer à conta; cache offline e conflitos são exibidos na área pessoal. Outro dispositivo busca o estado ao abrir/recarregar a página.
+
+Testes reais com contas temporárias confirmaram isolamento entre contas, recuperação de lista/progresso em outro contexto, gravação condicional por revisão e escolha explícita de conflito. A interface real de edição de avatar foi gravada no Supabase e recuperada em outro navegador. As contas temporárias são removidas após a QA.
+
+A revisão de segurança do Supabase não apontou falha nova na biblioteca. A ausência de policies em cinema_admins e cinema_integrations é intencional (negação ao cliente). Continua o aviso de proteção contra senhas vazadas desativada: [configuração e documentação](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).

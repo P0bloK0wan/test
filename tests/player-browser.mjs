@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright-core';
+import {startServer} from '../server.mjs';
+const server=await startServer(0), base=`http://127.0.0.1:${server.address().port}`;
+let browser;
+try {
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ await page.route(`${base}/player-test`,r=>r.fulfill({contentType:'text/html',body:`<!doctype html><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/streamlab-player.css"><video controls playsinline preload="auto" src="/assets/media/sintel-trailer.mp4"></video><input id="outside"><script type="module">import{mountStreamlabPlayer}from'/streamlab-player.mjs';window.cleanup=mountStreamlabPlayer(document.querySelector('video'),{title:'Sintel'});</script>`}));
+ await page.goto(`${base}/player-test`);
+ await page.waitForFunction(()=>document.querySelector('video').readyState>=2);
+ assert.equal(await page.locator('video').evaluate(v=>v.controls),false);
+ await page.getByRole('button',{name:'Reproduzir',exact:true}).click();
+ await page.waitForFunction(()=>!document.querySelector('video').paused&&document.querySelector('video').currentTime>0);
+ await page.getByRole('button',{name:'Pausar',exact:true}).click();
+ await page.getByRole('button',{name:'Avançar 10 segundos'}).click();
+ assert.ok(await page.locator('video').evaluate(v=>v.currentTime>=10));
+ await page.getByRole('button',{name:'Voltar 10 segundos'}).click();
+ assert.ok(await page.locator('video').evaluate(v=>v.currentTime<3));
+ await page.getByLabel('Velocidade de reprodução').selectOption('1.5');
+ assert.equal(await page.locator('video').evaluate(v=>v.playbackRate),1.5);
+ await page.getByLabel('Volume',{exact:true}).fill('0.4');
+ assert.ok(Math.abs(await page.locator('video').evaluate(v=>v.volume)-0.4)<0.01);
+ await page.getByRole('button',{name:'Silenciar',exact:true}).click();
+ assert.equal(await page.locator('video').evaluate(v=>v.muted),true);
+ await page.getByLabel('Posição do vídeo',{exact:true}).fill('20');
+ assert.ok(Math.abs(await page.locator('video').evaluate(v=>v.currentTime)-20)<1);
+ await page.locator('.streamlab-player').focus();await page.keyboard.press('ArrowRight');
+ assert.ok(await page.locator('video').evaluate(v=>v.currentTime>=29));
+ await page.locator('#outside').focus();const before=await page.locator('video').evaluate(v=>v.currentTime);await page.keyboard.press('ArrowLeft');
+ assert.equal(await page.locator('video').evaluate(v=>v.currentTime),before);
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ for(const button of await page.locator('.sl-buttons button:visible').all()){const box=await button.boundingBox();assert.ok(box.height>=44&&box.width>=44);}
+ await page.evaluate(()=>{document.querySelector('video').dispatchEvent(new Event('error'));});
+ assert.equal(await page.locator('video').evaluate(v=>v.controls),true);
+ assert.equal(await page.locator('.sl-controls').isVisible(),false);
+ await page.evaluate(()=>{window.cleanup();window.cleanup();});
+ assert.equal(await page.locator('.streamlab-player').count(),0);
+ assert.equal(await page.locator('video').evaluate(v=>v.controls),true);
+ console.log('PASS real local trailer playback, pause, seek ±10, timeline, speed, volume, mute, focused keyboard, mobile touch targets, error fallback, cleanup');
+}finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

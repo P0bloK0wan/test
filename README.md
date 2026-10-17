@@ -111,3 +111,13 @@ O painel possui **Informações do filme**: digite o título, busque, selecione 
 Leia [como configurar e usar](docs/METADADOS.md) e [a documentação técnica](docs/TMDB.md). Os testes da busca usam respostas controladas, pois nenhuma chave real do TMDB foi fornecida. A verificação real do backend cobre autenticação, segredo inacessível, integração sem chave e erros de configuração.
 
 Guia de publicação, contas e envio de vídeos: [docs/GITHUB-PAGES.md](docs/GITHUB-PAGES.md).
+
+## Área pessoal e player Streamlab
+
+Abra **Minha Streamlab** no menu inferior ou no menu de perfis para ver favoritos, curtidas e progresso. Escolha um dos nove avatares originais ao editar o perfil. A biblioteca é sincronizada na conta Supabase; outro aparelho recupera os dados ao abrir/recarregar o site. Alterações offline ficam no aparelho e conflitos exigem escolha explícita. Veja [SYNC](docs/SYNC.md) e [área pessoal](docs/personal-library.md).
+
+Arquivos MP4 compatíveis e trailers usam o player próprio Streamlab. Vídeos incorporados do Google Drive/YouTube usam os controles do provedor e não oferecem sincronização de progresso ao site. Veja [player](docs/PLAYER.md). O player não converte vídeos nem adiciona hospedagem.
+
+A avaliação dos três projetos sugeridos está em [REPOSITORY-REVIEW](docs/REPOSITORY-REVIEW.md). Nenhum código desses repositórios foi incorporado nesta entrega.
+
+O painel oferece quatro etapas (Vídeo, Informações, Capa e Revisão), prévia e modo rápido opcional. Salvar cria rascunho; publicar exige ação separada. Veja [ADMIN-WIZARD](docs/ADMIN-WIZARD.md).
