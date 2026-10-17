@@ -14,5 +14,6 @@ PASS 375px mobile home has no horizontal document overflow
 PASS Motion runs when allowed and respects reduced-motion changes
 PASS A device file plays locally and its object URL is revoked on close
 PASS An owner-configured catalog video plays natively and saves progress
+PASS Drive metadata opens the canonical Google preview with a direct fallback
 PASS No uncaught application errors
-{"passed":true,"checks":17}
+{"passed":true,"checks":18}

@@ -33,6 +33,7 @@ try{
  await admin.locator('#workspace').waitFor({state:'visible',timeout:20000});checks.push('Real email/password admin login and server permission');console.log('Live QA: admin authenticated');
  stage='upload';const title='QA publicação '+Date.now();
  await admin.locator('[name=title]').fill(title);await admin.locator('[name=synopsis]').fill('Temporary authorized live QA trailer');await admin.locator('[name=minutes]').fill('1');await admin.locator('[name=credit]').fill('Blender Foundation trailer CC BY 3.0; temporary QA');
+ await admin.locator('#video-source').selectOption('upload');
  await admin.locator('#video-file').setInputFiles(fileURLToPath(new URL('../dist/assets/media/sintel-trailer.mp4',import.meta.url)));
  await admin.locator('#save-button').click();
  await admin.getByText('Rascunho salvo.',{exact:false}).waitFor({timeout:60000});

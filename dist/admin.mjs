@@ -1,4 +1,5 @@
 import { cloud } from './cloud-client.mjs';
+import { parseGoogleDriveLink } from './drive-link.mjs';
 
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -30,9 +31,21 @@ function setBusy(value) {
   busy = value;
   for (const button of document.querySelectorAll('button')) button.disabled = value && button.id !== 'cancel-upload';
   for (const field of document.querySelectorAll('input,select,textarea')) field.disabled = value;
+  updateVideoSource();
   $('auth-form').setAttribute('aria-busy', String(value));
   $('video-form').setAttribute('aria-busy', String(value));
 }
+function updateVideoSource() {
+  const drive = $('video-source').value === 'drive';
+  $('drive-fields').hidden = !drive;
+  $('upload-fields').hidden = drive;
+  $('drive-link').required = drive;
+  $('drive-link').disabled = busy || !drive;
+  $('video-file').required = !drive;
+  $('video-file').disabled = busy || drive;
+  $('save-button').textContent = drive ? 'Salvar rascunho com link' : 'Enviar e salvar rascunho';
+}
+$('video-source').addEventListener('change', updateVideoSource);
 function setMode(mode) {
   authMode = mode;
   const signup = mode === 'signup', reset = mode === 'reset', recovery = mode === 'recovery';
@@ -128,20 +141,28 @@ $('video-form').addEventListener('submit', async event => {
   const values = new FormData(form);
   const video = values.get('video');
   const cover = values.get('cover');
-  if (!(video instanceof File) || !video.size || !/\.mp4$/i.test(video.name) || (video.type && video.type !== 'video/mp4')) return message('Escolha um arquivo MP4 válido. H.264 com áudio AAC oferece maior compatibilidade.', true);
-  if (video.size > maxVideoBytes) return message(`O limite atual por vídeo é ${Math.floor(maxVideoBytes / 1024 / 1024)} MiB. Para arquivos maiores, configure um serviço de vídeo com envio retomável.`, true);
+  const drive = values.get('video_source') === 'drive';
+  let normalizedDrive = null;
+  if (drive) {
+    try { normalizedDrive = parseGoogleDriveLink(String(values.get('drive_url') || '').trim()); }
+    catch { return message('Cole um link válido de arquivo do Google Drive. Use Compartilhar → Copiar link; links de pastas não são aceitos.', true); }
+  }
+  if (!drive && (!(video instanceof File) || !video.size || !/\.mp4$/i.test(video.name) || (video.type && video.type !== 'video/mp4'))) return message('Escolha um arquivo MP4 válido. H.264 com áudio AAC oferece maior compatibilidade.', true);
+  if (!drive && video.size > maxVideoBytes) return message(`O limite atual por vídeo é ${Math.floor(maxVideoBytes / 1024 / 1024)} MiB. Para arquivos maiores, configure um serviço de vídeo com envio retomável.`, true);
   if (cover?.size && (cover.size > 5 * 1024 * 1024 || !['image/jpeg','image/png','image/webp'].includes(cover.type))) return message('A capa deve ser JPG, PNG ou WebP de até 5 MiB.', true);
   const payload = {
     title:String(values.get('title')).trim(), synopsis:String(values.get('synopsis')).trim(),
     age:values.get('age') === 'L' ? 0 : Number(values.get('age')), minutes:Number(values.get('minutes')), year:Number(values.get('year')),
     genres:[...new Set(String(values.get('genres')).split(',').map(v => v.trim()).filter(Boolean))],
-    kind:String(values.get('kind')), director:String(values.get('director')).trim(), credit:String(values.get('credit')).trim(), status:'draft'
+    kind:String(values.get('kind')), director:String(values.get('director')).trim(), credit:String(values.get('credit')).trim(), status:'draft',
+    video_source:drive ? 'drive' : 'upload', drive_url:normalizedDrive?.shareUrl || null, video_path:null
   };
   if (!payload.title || !payload.synopsis || !payload.credit) return message('Preencha título, descrição e créditos.', true);
   controller = new AbortController();
   const signal = controller.signal;
   setBusy(true); message('');
   $('upload-state').hidden = false; $('cancel-upload').hidden = false; $('upload-progress').value = 0;
+  $('upload-label').textContent = drive ? 'Préparando cadastro do link…' : 'Preparando envio…';
   try {
     if (!await cloud.isAdmin()) throw new Error('Sua permissão de administrador não está disponível. Entre novamente.');
     if (cover?.size) {
@@ -150,15 +171,17 @@ $('video-form').addEventListener('submit', async event => {
       pendingFiles.cover ||= await cloud.uploadCover(cover);
     } else { pendingFiles.coverFile = null; pendingFiles.cover = null; }
     if (signal.aborted) throw new DOMException('Cancelado', 'AbortError');
-    if (pendingFiles.videoFile !== video) { pendingFiles.videoFile = video; pendingFiles.video = null; }
-    if (!pendingFiles.video) pendingFiles.video = await cloud.uploadVideo(video,{signal,onProgress(value) {
-      const percentage = typeof value === 'number' ? value : value?.percent;
-      if (Number.isFinite(percentage)) { $('upload-progress').value = Math.min(100,Math.max(0,percentage)); $('upload-label').textContent = `Enviando vídeo: ${Math.round(percentage)}%`; }
-      else { $('upload-progress').removeAttribute('value'); $('upload-label').textContent = 'Enviando vídeo…'; }
-    }});
-    if (signal.aborted) throw new DOMException('Cancelado', 'AbortError');
+    if (!drive) {
+      if (pendingFiles.videoFile !== video) { pendingFiles.videoFile = video; pendingFiles.video = null; }
+      if (!pendingFiles.video) pendingFiles.video = await cloud.uploadVideo(video,{signal,onProgress(value) {
+        const percentage = typeof value === 'number' ? value : value?.percent;
+        if (Number.isFinite(percentage)) { $('upload-progress').value = Math.min(100,Math.max(0,percentage)); $('upload-label').textContent = `Enviando vídeo: ${Math.round(percentage)}%`; }
+        else { $('upload-progress').removeAttribute('value'); $('upload-label').textContent = 'Enviando vídeo…'; }
+      }});
+      if (signal.aborted) throw new DOMException('Cancelado', 'AbortError');
+      payload.video_path = pendingFiles.video.path;
+    }
     $('upload-label').textContent = 'Salvando rascunho…';
-    payload.video_path = pendingFiles.video.path;
     payload.image_path = pendingFiles.cover?.path || null;
     await cloud.saveVideo(payload);
     pendingFiles = {videoFile:null,coverFile:null,video:null,cover:null};
@@ -179,19 +202,20 @@ $('video-list').addEventListener('click', async event => {
   if (!row) return;
   const deleting = Boolean(button.dataset.delete);
   const publishing = row.status !== 'published';
-  const question = deleting ? `Excluir “${row.title}”? O vídeo será retirado do catálogo. Essa ação não pode ser desfeita.` : publishing ? `Publicar “${row.title}” no catálogo para os usuários do site?` : `Retirar “${row.title}” do catálogo? Ele continuará como rascunho no painel.`;
+  const question = deleting ? `Excluir “${row.title}”? O registro será retirado do catálogo. O arquivo do Google Drive não será apagado. Essa ação não pode ser desfeita.` : publishing ? `Publicar “${row.title}” no catálogo para os usuários do site?` : `Retirar “${row.title}” do catálogo? Ele continuará como rascunho no painel.`;
   if (!window.confirm(question)) return;
   setBusy(true); message('');
   try {
     if (!await cloud.isAdmin()) throw new Error('Sua permissão de administrador expirou.');
     if (deleting) await cloud.deleteVideo(id); else await cloud.setPublished(id,publishing);
-    message(deleting ? 'Vídeo excluído do catálogo.' : publishing ? 'Vídeo publicado. O catálogo online pode receber a atualização.' : 'Vídeo retirado do catálogo e mantido como rascunho.');
+    message(deleting ? 'Registro excluído do catálogo. O arquivo do Google Drive não foi apagado.' : publishing ? 'Vídeo publicado. O catálogo online pode receber a atualização.' : 'Vídeo retirado do catálogo e mantido como rascunho.');
     await refreshVideos();
   } catch (error) { message(errorMessage(error), true); }
   finally { setBusy(false); }
 });
 $('video-limit').textContent = `MP4 · até ${Math.floor(maxVideoBytes / 1024 / 1024)} MiB · H.264 / AAC recomendado`;
 setMode('login');
+updateVideoSource();
 if (!cloud.ready) $('setup').hidden = false;
 else {
   // Defer async SDK work outside the auth event callback to avoid auth lock deadlocks.

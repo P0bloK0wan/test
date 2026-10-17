@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "mode": "LIVE_SUPABASE_WITH_FICTIONAL_DRIVE_ID",
+  "checkedAt": "2026-10-17T13:16:24.851Z",
+  "checks": [
+    "Real existing test administrator login",
+    "Live database rejects missing, foreign and folder Drive links",
+    "Drive link creates a real private draft with no video upload",
+    "Published Drive entry reaches an already open anonymous catalogue",
+    "Viewer selects canonical Drive preview and resource-key-aware fallback",
+    "Removing the catalogue entry succeeds without a storage object or Drive API call"
+  ],
+  "limits": [
+    "No actual user video provided: Drive preview playback, public permission and processing are NOT verified.",
+    "Drive requests were deliberately blocked; only metadata, authorisation, catalogue propagation and iframe/fallback URLs tested.",
+    "Realtime disabled to exercise the 10-second polling fallback."
+  ]
+}

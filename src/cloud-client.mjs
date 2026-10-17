@@ -1,6 +1,7 @@
 import {createClient} from '@supabase/supabase-js';
 import {Upload} from 'tus-js-client';
 import {cloudConfig} from '../dist/cloud-config.mjs';
+import {parseGoogleDriveLink} from '../dist/drive-link.mjs';
 const ready=!!(cloudConfig.url&&cloudConfig.publishableKey);
 const client=ready?createClient(cloudConfig.url,cloudConfig.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
 const bucket='cinema-media';
@@ -38,7 +39,7 @@ async function uploadCover(file){
 }
 async function listAdminVideos(){const {data,error}=await requireClient().from('cinema_videos').select('*').order('created_at',{ascending:false});fail(error);return data;}
 async function saveVideo(payload){
- const allowed=['id','title','synopsis','age','minutes','year','genres','kind','director','credit','video_path','image_path','status'];
+ const allowed=['id','title','synopsis','age','minutes','year','genres','kind','director','credit','video_path','image_path','status','video_source','drive_url'];
  const row=Object.fromEntries(Object.entries(payload).filter(([key])=>allowed.includes(key)));
  const query=row.id?requireClient().from('cinema_videos').update(row).eq('id',row.id):requireClient().from('cinema_videos').insert(row);
  const {data,error}=await query.select().single();fail(error);return data;
@@ -52,7 +53,11 @@ async function deleteVideo(id){
 async function isAdmin(){if(!client)return false;const {data,error}=await client.rpc('cinema_admin_access');if(error)return false;return data===true;}
 async function publishedMovies(){
  const {data,error}=await requireClient().from('cinema_videos').select('*').eq('status','published').order('created_at',{ascending:false});fail(error);
- return Promise.all(data.map(async row=>({...row,video:await signedUrl(row.video_path),image:await signedUrl(row.image_path)||'assets/own-video.svg',source:await signedUrl(row.video_path)})));
+ return Promise.all(data.map(async row=>{
+  const drive=row.video_source==='drive'?parseGoogleDriveLink(row.drive_url):null;
+  const video=drive?drive.shareUrl:await signedUrl(row.video_path);
+  return {...row,drive,video,image:await signedUrl(row.image_path)||'assets/own-video.svg',source:video};
+ }));
 }
 function subscribe(onChange){
  if(!client)return ()=>{};

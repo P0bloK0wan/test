@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "checkedAt": "2026-10-17T12:43:40.556Z",
+  "checkedAt": "2026-10-17T13:15:20.068Z",
   "checks": [
     {
       "label": "Home renders original Sintel hero and eleven catalog titles",
@@ -67,13 +67,18 @@
       "passed": true
     },
     {
+      "label": "Drive metadata opens the canonical Google preview with a direct fallback",
+      "passed": true
+    },
+    {
       "label": "No uncaught application errors",
       "passed": true
     }
   ],
   "limits": [
     "Official YouTube full-film playback not exercised; external network requests blocked.",
-    "APK runtime, Android device, iOS, and real user account services not exercised."
+    "APK runtime, Android device, iOS, and real user account services not exercised.",
+    "Google Drive iframe URL tested with fictional ID; real Drive video playback not exercised."
   ],
   "screenshots": [
     "docs/desktop.png",

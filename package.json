@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs",
+    "test": "node --test --test-isolation=none tests/library.test.mjs tests/server.test.mjs tests/drive-link.test.mjs",
     "test:browser": "node tests/browser.mjs",
     "build": "node scripts/build-cloud.mjs",
     "test:admin": "node tests/admin-browser.mjs",

@@ -1,6 +1,6 @@
 {
   "mode": "MOCK",
-  "checks": 14,
+  "checks": 23,
   "results": [
     {
       "label": "Login inicial",
@@ -19,7 +19,31 @@
       "passed": true
     },
     {
-      "label": "Upload simulado cria rascunho sem publicar",
+      "label": "Google Drive é padrão sem exigir arquivo MP4",
+      "passed": true
+    },
+    {
+      "label": "Link Drive obrigatório na fonte padrão",
+      "passed": true
+    },
+    {
+      "label": "URL fora do Drive não cria registro",
+      "passed": true
+    },
+    {
+      "label": "Link de pasta Drive não cria registro",
+      "passed": true
+    },
+    {
+      "label": "Durante salvamento fonte e ambos campos ficam desabilitados",
+      "passed": true
+    },
+    {
+      "label": "Link Drive cria rascunho com URL normalizada sem chamar uploadVideo",
+      "passed": true
+    },
+    {
+      "label": "Arquivo MP4 continua desabilitado após salvar Drive",
       "passed": true
     },
     {
@@ -32,6 +56,18 @@
     },
     {
       "label": "Exclusão confirmada",
+      "passed": true
+    },
+    {
+      "label": "Alternar para upload desativa campo Drive e exige arquivo",
+      "passed": true
+    },
+    {
+      "label": "Upload MP4 preservado com fonte upload e link Drive nulo",
+      "passed": true
+    },
+    {
+      "label": "Após upload formulário volta ao padrão Drive sem arquivo obrigatório",
       "passed": true
     },
     {
@@ -59,5 +95,5 @@
       "passed": true
     }
   ],
-  "note": "UI com transporte/backend simulado; não verifica Supabase real, permissões RLS reais, entrega de e-mail, upload remoto nem codec de vídeo."
+  "note": "UI com transporte/backend simulado; não verifica Supabase real, permissões RLS reais, entrega de e-mail, upload remoto, permissões reais do Drive, reprodução no Google nem codec de vídeo."
 }

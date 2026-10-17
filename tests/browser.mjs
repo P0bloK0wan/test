@@ -165,8 +165,21 @@ try {
     await page.waitForFunction(()=>document.querySelector('video')?.currentTime>=4.8); await close();
     await context.unroute('**/my-videos.mjs');
   });
+  await check('Drive metadata opens the canonical Google preview with a direct fallback', async()=>{
+    const id='1DriveFixtureOnly12345',share=`https://drive.google.com/file/d/${id}/view?resourcekey=0-key`,embed=`https://drive.google.com/file/d/${id}/preview?resourcekey=0-key`;
+    const fixture={id:'drive-qa',title:'Drive QA',video_source:'drive',drive_url:share,video:share,drive:{shareUrl:share,embedUrl:embed},image:'assets/own-video.svg',age:0,year:2026,minutes:1,genres:['Meus vídeos'],kind:'live-action',credit:'QA fixture'};
+    await context.route('**/cloud-client.mjs',r=>r.fulfill({contentType:'text/javascript',body:`export const cloud={ready:true,publishedMovies:async()=>[${JSON.stringify(fixture)}],subscribe:()=>()=>{}};`}));
+    await go('films');await page.reload();
+    await page.getByRole('button',{name:'Detalhes de Drive QA',exact:true}).click();
+    await page.locator('#dialog [data-action="play"]').click();
+    assert.equal(await page.locator('#dialog iframe').getAttribute('src'),embed);
+    assert.equal(await page.locator('#dialog video').count(),0);
+    assert.equal(await page.locator('.player-bottom a').getAttribute('href'),share);
+    assert.match(await page.locator('#dialog').innerText(),/progresso desse player não é salvo/);
+    await close();await context.unroute('**/cloud-client.mjs');
+  });
   await check('No uncaught application errors', async()=>assert.deepEqual(errors,[]));
-  const result={passed:true,checkedAt:new Date().toISOString(),checks,limits:['Official YouTube full-film playback not exercised; external network requests blocked.', 'APK runtime, Android device, iOS, and real user account services not exercised.'],screenshots:['docs/desktop.png','docs/mobile.png']};
+  const result={passed:true,checkedAt:new Date().toISOString(),checks,limits:['Official YouTube full-film playback not exercised; external network requests blocked.', 'APK runtime, Android device, iOS, and real user account services not exercised.', 'Google Drive iframe URL tested with fictional ID; real Drive video playback not exercised.'],screenshots:['docs/desktop.png','docs/mobile.png']};
   await writeFile(`${docs}/browser-results.json`,JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify({passed:true,checks:checks.length}));
 } catch(error) {

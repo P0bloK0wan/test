@@ -1,6 +1,6 @@
 # Como colocar seus vídeos
 
-Você não precisa saber usar uma API. Para publicar sem editar código, use o novo [Painel do administrador](docs/PAINEL-ADMIN.md): envie vídeo e capa, salve o rascunho e toque em Publicar. O limite inicial é 50 MiB por vídeo. As duas opções abaixo continuam disponíveis.
+Você não precisa saber usar uma API. Para publicar sem editar código, use o novo [Painel do administrador](docs/PAINEL-ADMIN.md): envie vídeo e capa, salve o rascunho e toque em Publicar. Escolha **Link público Google Drive** e cole o link compartilhado; o vídeo fica no Drive. O limite de 50 MiB vale apenas para a opção de enviar um arquivo diretamente ao Supabase. As duas opções abaixo continuam disponíveis.
 
 ## 1. Assistir a um arquivo do celular ou computador
 
@@ -21,7 +21,7 @@ Use somente vídeos e capas que você tem autorização para disponibilizar. Exi
 - **Arquivo junto ao site:** copie um vídeo pequeno para `dist/assets/media/meu-filme.mp4` e a capa para `dist/assets/minha-capa.jpg`. A hospedagem precisa aceitar o tamanho total do site e dos arquivos.
 - **Hospedagem de vídeos ou armazenamento:** envie seu vídeo para um serviço que ofereça um link HTTPS direto para o arquivo MP4, como `https://seu-dominio.com/videos/meu-filme.mp4`. Esse caminho é mais adequado para filmes grandes. O serviço deve permitir reprodução no navegador, requisições parciais (Range) e tráfego de vídeo. Verifique limites, acesso e custos do serviço escolhido antes de contratar.
 
-Um link do Google Drive terminando em `/view` abre uma página e não é um link direto MP4. Não use esse link no campo `video`.
+Um link do Google Drive terminando em `/view` abre uma página e não é um link direto MP4. Use esse link no novo campo **Link público Google Drive** do painel. Não o coloque no campo `video` da configuração manual de MP4 abaixo.
 
 Depois de hospedar ou copiar o arquivo, abra **`dist/my-videos.mjs`** e preencha a lista. Por exemplo:
 
