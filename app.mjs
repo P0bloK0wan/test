@@ -55,6 +55,7 @@ function checkPersistence(){if(library.lastError())toast('Sua alteração vale n
 function avatar(profile,small=false){return `<span class="avatar avatar--${esc(profile.color)}${small?' avatar--small':''}${profile.avatar&&profile.avatar!=='classic'?' avatar--art':''}" aria-hidden="true">${avatarArt(profile.avatar)}</span>`;}
 function updateHeader(){
  const {view,params}=getRoute();const profile=library.activeProfile();
+ if($('account-entry'))$('account-entry').hidden=!!viewer;
  $('active-avatar').className=`avatar avatar--small avatar--${profile.color}${profile.avatar!=='classic'?' avatar--art':''}`;$('active-avatar').innerHTML=avatarArt(profile.avatar);
  $('profile-toggle').setAttribute('aria-label',viewer?`Abrir menu de perfis. Perfil atual: ${profile.name}`:'Entrar ou criar conta. Você está como visitante');
  $('header').classList.toggle('scrolled',scrollY>24||view!=='home'||params.has('genre'));
@@ -107,10 +108,10 @@ function openPanel(kind){
  if(currentPanel===kind){closePanel();return;}
  currentPanel=kind;const active=library.activeProfile();
  if(kind==='profiles'&&!viewer){
-  $('header-panel').innerHTML=`<div class="panel-label">VOCÊ ESTÁ COMO VISITANTE</div><p>Assista livremente. Sua conta guarda lista e progresso.</p><button class="panel-link" data-action="account-login">Entrar</button><button class="panel-link" data-action="account-signup">Criar minha conta</button><button class="panel-link" data-action="local-video">Abrir vídeo do aparelho</button>`;
+  $('header-panel').innerHTML=`<div class="panel-label">VOCÊ ESTÁ COMO VISITANTE</div><p>Assista livremente. Sua conta guarda lista e progresso.</p><button class="panel-link" data-action="account-login">Entrar</button><button class="panel-link" data-action="account-signup">Criar minha conta</button>`;
   $('profile-toggle').setAttribute('aria-expanded','true');$('notices-toggle').setAttribute('aria-expanded','false');
  }else if(kind==='profiles'){
-  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}${viewerIsAdmin?`<a class="panel-link" href="admin.html">${icon('settings')}Administrar catálogo</a>`:''}<div class="panel-label">${esc(viewer.email)}</div><button class="panel-link" data-action="sign-out">Sair da conta</button><a class="panel-link" href="#/me">${icon('heart')}Minha Streamlab</a><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="local-video">${icon('play')}Abrir vídeo do aparelho</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
+  $('header-panel').innerHTML=`<div class="panel-label">QUEM ESTÁ ASSISTINDO</div>${library.snapshot().profiles.map(p=>`<button class="panel-profile${p.id===active.id?' active':''}" data-action="switch-profile" data-profile="${esc(p.id)}">${avatar(p,true)}<span>${esc(p.name)}${p.kids?' <span class="kids-label">Infantil</span>':''}</span></button>`).join('')}${viewerIsAdmin?`<a class="panel-link" href="admin.html">${icon('settings')}Administrar catálogo</a>`:''}<div class="panel-label">${esc(viewer.email)}</div><button class="panel-link" data-action="sign-out">Sair da conta</button><a class="panel-link" href="#/me">${icon('heart')}Minha Streamlab</a><button class="panel-link" data-action="profiles">${icon('edit')}Gerenciar perfis</button><button class="panel-link" data-action="preferences">${icon('settings')}Preferências</button>`;
   $('profile-toggle').setAttribute('aria-expanded','true');$('notices-toggle').setAttribute('aria-expanded','false');
  }else{
   const items=noticeMovies();
@@ -147,33 +148,27 @@ function play(id,{trailer=false,resume=false}={}){
  if(trailer&&!m.trailer){toast('O trailer deste título não está disponível.');return;}
  openPlayer(m,{trailer,resume});
 }
-function openPlayer(m,{trailer=false,resume=false,temporary=false,onClose=()=>{}}={}){
+function openPlayer(m,{trailer=false,resume=false}={}){
  const drive=!trailer&&m.drive;
  const native=trailer||!!m.video&&!drive,media=trailer?m.trailer:m.video;
- const subtitle=temporary?'Arquivo deste aparelho · Não enviado':trailer?'Trailer oficial':drive?'Vídeo no Google Drive':m.video?'Vídeo do catálogo':'Filme completo · Canal oficial Blender Studio';
+ const subtitle=trailer?'Trailer oficial':drive?'Vídeo no Google Drive':m.video?'Vídeo do catálogo':'Filme completo · Canal oficial Blender Studio';
  const pref=library.preferences();
  const youtube=`https://www.youtube-nocookie.com/embed/${m.youtubeId}?autoplay=1&rel=0`;
  const stage=drive?`<iframe src="${esc(drive.embedUrl)}" title="${esc(m.title)} — vídeo no Google Drive" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`:native?`<video id="movie-video" controls playsinline preload="metadata" src="${esc(media)}" poster="${esc(m.image)}" ${pref.muted?'muted':''} aria-label="${trailer?'Trailer':'Vídeo'} de ${esc(m.title)}"></video>`:`<iframe src="${youtube}" title="${esc(m.title)} — filme completo no canal oficial" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
- const footer=drive?`<div class="player-bottom"><span>Reprodução pelo Google Drive.</span><a href="${esc(drive.shareUrl)}" target="_blank" rel="noopener noreferrer">Abrir no Google Drive ${icon('external')}</a></div><p class="small-note">Se o vídeo não abrir, confira se o compartilhamento está público ou tente Abrir no Google Drive. O arquivo pode estar em processamento ou com limite de acessos. O progresso desse player não é salvo pelo site.</p>`:temporary?'<div class="player-bottom"><span>O arquivo fica no seu aparelho e não entra no catálogo online.</span><button class="button button--outline" data-action="local-video">Escolher outro vídeo</button></div>':trailer?`<div class="player-bottom"><span class="trailer-badge">TRAILER</span><span>Blender Foundation</span><a href="${esc(media)}" download="${m.id}-trailer.mp4" aria-label="Baixar trailer de ${esc(m.title)}">Baixar trailer</a></div>`:m.video?'<div class="player-bottom"><span>Conteúdo fornecido pelo responsável do catálogo.</span></div>':`<div class="player-bottom"><a href="https://www.youtube.com/watch?v=${m.youtubeId}" target="_blank" rel="noopener noreferrer">Abrir no canal oficial ${icon('external')}</a></div>`;
- const error=drive?`<p>Confira o compartilhamento público e tente abrir o vídeo no Google Drive.</p><a class="button" href="${esc(drive.shareUrl)}" target="_blank" rel="noopener noreferrer">Abrir no Google Drive</a>`:native?`<p>Confira o arquivo ou o link. Prefira MP4 com vídeo H.264 e áudio AAC. Outros formatos dependem do navegador.</p>${trailer?`<a class="button" href="https://www.youtube.com/watch?v=${m.youtubeId}" target="_blank" rel="noopener noreferrer">Abrir canal oficial</a>`:'<button class="button button--outline" data-action="local-video">Escolher arquivo do aparelho</button>'}`:`<p>Tente novamente ou assista no canal oficial do filme.</p><a class="button" href="https://www.youtube.com/watch?v=${m.youtubeId}" target="_blank" rel="noopener noreferrer">Abrir canal oficial</a>`;
+ const footer=drive?`<div class="player-bottom"><span>Reprodução pelo Google Drive.</span><a href="${esc(drive.shareUrl)}" target="_blank" rel="noopener noreferrer">Abrir no Google Drive ${icon('external')}</a></div><p class="small-note">Se o vídeo não abrir, confira se o compartilhamento está público ou tente Abrir no Google Drive. O arquivo pode estar em processamento ou com limite de acessos. O progresso desse player não é salvo pelo site.</p>`:trailer?`<div class="player-bottom"><span class="trailer-badge">TRAILER</span><span>Blender Foundation</span><a href="${esc(media)}" download="${m.id}-trailer.mp4" aria-label="Baixar trailer de ${esc(m.title)}">Baixar trailer</a></div>`:m.video?'<div class="player-bottom"><span>Conteúdo fornecido pelo responsável do catálogo.</span></div>':`<div class="player-bottom"><a href="https://www.youtube.com/watch?v=${m.youtubeId}" target="_blank" rel="noopener noreferrer">Abrir no canal oficial ${icon('external')}</a></div>`;
+ const error=drive?`<p>Confira o compartilhamento público e tente abrir o vídeo no Google Drive.</p><a class="button" href="${esc(drive.shareUrl)}" target="_blank" rel="noopener noreferrer">Abrir no Google Drive</a>`:native?`<p>Confira o arquivo ou o link. Prefira MP4 com vídeo H.264 e áudio AAC. Outros formatos dependem do navegador.</p>${trailer?`<a class="button" href="https://www.youtube.com/watch?v=${m.youtubeId}" target="_blank" rel="noopener noreferrer">Abrir canal oficial</a>`:`<button class="button button--outline" data-action="retry-player" data-id="${esc(m.id)}">Tentar novamente</button>`}`:`<p>Tente novamente ou assista no canal oficial do filme.</p><a class="button" href="https://www.youtube.com/watch?v=${m.youtubeId}" target="_blank" rel="noopener noreferrer">Abrir canal oficial</a>`;
  openDialog(`<div class="player-topbar">${closeButton('Fechar reprodução')}<h1 id="dialog-title">${esc(m.title)}<span>${subtitle}</span></h1></div><div class="player-stage">${stage}</div>${footer}<div class="video-error" id="video-error" hidden><strong>Não foi possível reproduzir agora.</strong>${error}</div>`,{player:true});
  if(native){
   const video=$('movie-video');const errorPanel=$('video-error');const controller=new AbortController();const signal=controller.signal;let lastSaved=0;
   const cleanupControls=mountStreamlabPlayer(video,{title:m.title});
-  const save=()=>{if(viewer&&!temporary&&Number.isFinite(video.duration)&&video.duration>0&&findMovie(m.id)){try{library.recordProgress(m.id,video.currentTime,video.duration);}catch{/* Title may have been removed while playing. */}}};
+  const save=()=>{if(viewer&&Number.isFinite(video.duration)&&video.duration>0&&findMovie(m.id)){try{library.recordProgress(m.id,video.currentTime,video.duration);}catch{/* Title may have been removed while playing. */}}};
   video.muted=pref.muted;
-  video.addEventListener('loadedmetadata',()=>{const record=temporary?null:library.progress(m.id);if(resume&&record&&record.seconds<video.duration*.95)video.currentTime=record.seconds;if(pref.autoplay)video.play().catch(()=>{});},{once:true,signal});
+  video.addEventListener('loadedmetadata',()=>{const record=library.progress(m.id);if(resume&&record&&record.seconds<video.duration*.95)video.currentTime=record.seconds;if(pref.autoplay)video.play().catch(()=>{});},{once:true,signal});
   video.addEventListener('timeupdate',()=>{if(Date.now()-lastSaved>1000){save();lastSaved=Date.now();}},{signal});
   video.addEventListener('ended',save,{signal});video.addEventListener('pause',save,{signal});
   video.addEventListener('error',()=>{errorPanel.hidden=false;},{signal});
-  playerCleanup=()=>{save();controller.abort();cleanupControls();video.pause();video.removeAttribute('src');video.load();onClose();};
+  playerCleanup=()=>{save();controller.abort();cleanupControls();video.pause();video.removeAttribute('src');video.load();};
  }
-}
-function playLocalFile(file){
- if(!file)return;
- if(!/\.(mp4|webm|ogv|ogg)$/i.test(file.name)&&!/^video\//.test(file.type)){toast('Escolha um arquivo de vídeo. Prefira MP4 com vídeo H.264 e áudio AAC.');return;}
- const url=URL.createObjectURL(file);
- try{openPlayer({title:file.name.replace(/\.[^.]+$/,''),video:url,image:'assets/own-video.svg'},{temporary:true,onClose:()=>URL.revokeObjectURL(url)});}catch(error){URL.revokeObjectURL(url);throw error;}
 }
 
 function profiles(){
@@ -189,12 +184,13 @@ function profileForm(id=null){
 }
 function preferences(){const pref=library.preferences();openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Do seu jeito</h1><p>Preferências de reprodução do perfil ${esc(library.activeProfile().name)}.</p><label class="settings-row"><div><strong>Iniciar trailers automaticamente</strong><p>Reproduzir ao abrir um trailer. A página inicial permanece silenciosa.</p></div><input id="pref-autoplay" type="checkbox" ${pref.autoplay?'checked':''}></label><label class="settings-row"><div><strong>Começar com o som desativado</strong><p>Você pode ativar o áudio nos controles do vídeo.</p></div><input id="pref-muted" type="checkbox" ${pref.muted?'checked':''}></label><div class="form-actions"><button class="button" data-action="save-preferences">Salvar preferências</button></div><p class="small-note">Estas opções se aplicam aos trailers disponíveis neste site.</p></section>`);}
 function credits(){openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Créditos do catálogo</h1><section aria-label="Dados de filmes TMDB"><a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer"><img src="assets/tmdb.svg" alt="TMDB" width="120" style="height:auto"></a><p>Integração opcional para informações de filmes.</p><p lang="en">This product uses the TMDB API but is not endorsed or certified by TMDB.</p></section><p>Histórias abertas, feitas por pessoas talentosas. Conheça quem criou cada filme.</p><ul class="credits-list">${catalog.map(m=>`<li><a href="${esc(m.source)}" target="_blank" rel="noopener noreferrer">${esc(m.title)}</a><span>${m.year} · Direção: ${esc(m.director)}</span><span>${esc(m.credit)}</span></li>`).join('')}</ul><p class="small-note">Artes: <a href="https://studio.blender.org/terms-and-conditions/" target="_blank" rel="noopener noreferrer">Creative Commons Atribuição 4.0</a>. Trailers de Sintel e Big Buck Bunny: Blender Foundation, CC BY 3.0, hospedados originalmente pelo W3C. Filmes completos: incorporações dos canais oficiais. Sinopses em português e experiência web são independentes.</p></section>`);}
-function help(){openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Vamos encontrar sua próxima história?</h1><div class="help-list"><h3>Explore sem pressa</h3><p>Busque por um título, uma ideia ou um gênero. Nos trilhos, deslize para ver mais filmes.</p><h3>Uma lista só sua</h3><p>Use o + para guardar um filme. Ao trocar de perfil, você encontra uma lista diferente.</p><h3>Vídeos do seu aparelho</h3><p>Abra o menu do perfil ou o rodapé e toque em Abrir vídeo do aparelho. Escolha um arquivo, preferencialmente MP4. Ele não é enviado e fica disponível apenas nesta reprodução. Para compartilhar no catálogo, um administrador pode cadastrar o link público do Drive ou enviar um MP4 pelo painel.</p><h3>Continue depois</h3><p>O progresso dos trailers e vídeos próprios do catálogo fica salvo. Volte à página inicial para continuar de onde parou.</p><h3>Cinema aberto</h3><p>Os filmes completos são exibidos pelos canais oficiais do Blender Studio. Os trailers de Sintel e Big Buck Bunny também estão disponíveis aqui para assistir e baixar.</p><h3>Sua biblioteca</h3><p>Sua biblioteca pertence à conta conectada. A área Minha Streamlab mostra quando há alterações pendentes ou sem conexão. Alterações locais ficam neste navegador até a sincronização.</p></div></section>`);}
+function help(){openDialog(`${closeButton()}<section class="panel-dialog"><h1 id="dialog-title">Vamos encontrar sua próxima história?</h1><div class="help-list"><h3>Explore sem pressa</h3><p>Busque por um título, uma ideia ou um gênero. Nos trilhos, deslize para ver mais filmes.</p><h3>Uma lista só sua</h3><p>Use o + para guardar um filme. Ao trocar de perfil, você encontra uma lista diferente.</p><h3>Assistir ao catálogo</h3><p>Escolha um título para abrir seus detalhes e iniciar a reprodução. Vídeos publicados pelo administrador aparecem no catálogo.</p><h3>Continue depois</h3><p>O progresso dos trailers e vídeos próprios do catálogo fica salvo. Volte à página inicial para continuar de onde parou.</p><h3>Cinema aberto</h3><p>Os filmes completos são exibidos pelos canais oficiais do Blender Studio. Os trailers de Sintel e Big Buck Bunny também estão disponíveis aqui para assistir e baixar.</p><h3>Sua biblioteca</h3><p>Sua biblioteca pertence à conta conectada. A área Minha Streamlab mostra quando há alterações pendentes ou sem conexão. Alterações locais ficam neste navegador até a sincronização.</p></div></section>`);}
 function saveMovie(id){if(!viewer){promptAccount(id);return;}try{const saved=library.toggleSaved(id);updateSavedButtons(id);if(['list','me'].includes(getRoute().view)&&!dialog.open)renderMain();toast(saved?'Adicionado à sua lista.':'Removido da sua lista.');checkPersistence();}catch{toast('Não foi possível alterar sua lista.');}}
 
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');
  if(!button){if(currentPanel&&!$('header').contains(event.target))closePanel();return;}
+ if(button.tagName==='A')event.preventDefault();
  const {action,id}=button.dataset;
  if(!viewer&&['profiles','new-profile','edit-profile','switch-profile','delete-profile','confirm-delete-profile','rate'].includes(action)){promptAccount();return;}
  switch(action){
@@ -205,7 +201,8 @@ document.addEventListener('click',event=>{
   case 'play':play(id);break;
   case 'trailer':play(id,{trailer:true});break;
   case 'resume':play(id,{trailer:!findMovie(id)?.video,resume:true});break;
-  case 'local-video':closePanel();$('local-video-file').click();break;
+  case 'retry-player':play(id);break;
+  case 'retry-catalog':void refreshCloudCatalog();break;
   case 'save':saveMovie(id);break;
   case 'close':closeDialog();break;
   case 'rail':{const rail=$(button.dataset.target);rail?.scrollBy({left:rail.clientWidth*.8*Number(button.dataset.direction),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});break;}
@@ -235,7 +232,6 @@ document.querySelector('.skip-link').addEventListener('click',event=>{event.prev
 $('search-toggle').innerHTML=icon('search');$('search-toggle').addEventListener('click',()=>{route('search');requestAnimationFrame(()=>$('global-search').focus());});
 $('profile-toggle').addEventListener('click',()=>openPanel('profiles'));$('notices-toggle').addEventListener('click',()=>openPanel('notices'));
 $('global-search').addEventListener('input',event=>{const r=getRoute();route('search',{q:event.target.value,genre:r.params.get('genre')||''},true);});
-$('local-video-file').addEventListener('change',event=>{const file=event.target.files?.[0];event.target.value='';playLocalFile(file);});
 document.addEventListener('change',event=>{if(event.target.id==='genre-filter'){const r=getRoute();route(r.view,{genre:event.target.value,q:r.params.get('q')||''});}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&currentPanel){closePanel();$('profile-toggle').focus();}});
 window.addEventListener('hashchange',()=>{closePanel();renderMain();window.scrollTo({top:0,behavior:'instant'});if(getRoute().view==='search')$('global-search').focus({preventScroll:true});});
@@ -249,7 +245,8 @@ let cloudFingerprint=null,cloudLoading=false,initialCatalogReady=Promise.resolve
 async function refreshCloudCatalog(){
  if(!cloud.ready||cloudLoading)return;cloudLoading=true;
  try{
-  const rows=await cloud.publishedMovies();
+  let catalogueTimer;const rows=await Promise.race([cloud.publishedMovies(),new Promise((_,reject)=>catalogueTimer=setTimeout(()=>reject(new Error('Catalogue timeout')),10000))]).finally(()=>clearTimeout(catalogueTimer));
+  const status=$('catalog-status');if(status){status.hidden=true;status.replaceChildren();}
   const fingerprint=JSON.stringify(rows.map(m=>[m.id,m.updated_at,m.video,m.image]));
   if(fingerprint!==cloudFingerprint){
    const first=cloudFingerprint===null;const previous=new Set(catalog.map(m=>m.id));
@@ -261,7 +258,7 @@ async function refreshCloudCatalog(){
    const added=movies.filter(m=>!previous.has(m.id)&&(!library.activeProfile().kids||m.age<=10));
    if(!first&&added.length)toast(`${added.length===1?'Novo vídeo disponível':'Novos vídeos disponíveis'}: ${added.map(m=>m.title).join(', ')}`);
   }
- }catch{ /* Preserve the last usable catalogue; the admin shows actionable errors. */ }finally{cloudLoading=false;}
+ }catch{const status=$('catalog-status');if(status){status.hidden=false;status.innerHTML='<span>Não foi possível atualizar o catálogo. Os títulos já carregados continuam disponíveis.</span><button data-action="retry-catalog">Tentar novamente</button>';}}finally{cloudLoading=false;}
 }
 if(cloud.ready){
  initialCatalogReady=refreshCloudCatalog();
